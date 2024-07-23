@@ -1,0 +1,5 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">LuckyLotto</string>
+    <!-- OAuth ID Client -->
+    <string name="oauth_id_client" tools:ignore="TypographyDashes">385634548781-2lpjfkv75bn8uokhp8e2s6ri46b83sul.apps.googleusercontent.com</string>
+</resources>

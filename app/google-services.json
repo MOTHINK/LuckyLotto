@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "158994278835",
+    "project_id": "luckylotto-f3140",
+    "storage_bucket": "luckylotto-f3140.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158994278835:android:0aad512f4e85b4083383c6",
+        "android_client_info": {
+          "package_name": "com.example.luckylotto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158994278835-l5s0tpooerfd76ob66j6irt6khj749td.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBb_kqRgHQC87URxK5JKNT1j8erb-p9tEM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158994278835-l5s0tpooerfd76ob66j6irt6khj749td.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
