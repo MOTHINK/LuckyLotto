@@ -69,7 +69,6 @@ private fun ProfileCard(modifier: Modifier) {
                 modifier = modifier
                     .fillMaxWidth()
                     .height(100.dp)
-                    .background(Color.DarkGray)
             ) {
                 Row(
                     modifier
@@ -78,9 +77,10 @@ private fun ProfileCard(modifier: Modifier) {
                 ) {
                     Box(modifier = modifier
                         .height(100.dp)
-                        .width(100.dp)
-                        .background(Color.Gray)) {
-                        PurchaseCoins()
+                        .width(100.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        MailCard()
                     }
                     Box(
                         modifier = modifier
@@ -92,11 +92,10 @@ private fun ProfileCard(modifier: Modifier) {
                     }
                     Box(modifier = modifier
                         .height(100.dp)
-                        .width(100.dp)
-                        .background(Color.Gray),
+                        .width(100.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        MailCard()
+                        LogoutButton()
                     }
                 }
             }
@@ -131,22 +130,12 @@ private fun MailCard() {
 private fun PurchaseCoins() {
     IconButton(
         modifier =  Modifier
-            .size(85.dp),
+            .size(85.dp)
+            .background(Color.Black),
         onClick = { /* Handle button click */ }
     ) {
         // Code here next...
     }
-}
-
-@Composable
-private fun JustAnImage(modifier: Modifier) {
-    Image(
-        modifier =  modifier
-            .size(50.dp),
-        painter = painterResource(id = R.drawable.mail),
-        contentScale = ContentScale.Crop,
-        contentDescription = "Mail"
-    )
 }
 
 @Composable
@@ -185,19 +174,25 @@ private fun MessageCounter() {
 
 @Preview(showBackground = true)
 @Composable
-private fun CoinCounter() {
-    val size = 70
-    Box(
-        modifier = Modifier
-            .size(size.dp),
-        contentAlignment = Alignment.Center
-    ){
-        Image(
-            modifier =  Modifier
+private fun LogoutButton() {
+    val size = 50
+    IconButton(
+        modifier =  Modifier
+            .size(85.dp),
+        onClick = { /* Handle button click */ }
+    ) {
+        Box(
+            modifier = Modifier
                 .size(size.dp),
-            painter = painterResource(id = R.drawable.coin),
-            contentScale = ContentScale.Crop,
-            contentDescription = "Mail"
-        )
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(size.dp),
+                painter = painterResource(id = R.drawable.logout),
+                contentScale = ContentScale.Crop,
+                contentDescription = "Mail"
+            )
+        }
     }
 }
