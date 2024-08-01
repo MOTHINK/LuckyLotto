@@ -53,15 +53,20 @@ class GoogleAuthenticationCredentialManager private constructor() {
             .build()
     }
 
-    fun startGoogleAuthenticationFlow(coroutineScope: CoroutineScope, context: Context, setFilterByAuthorizedAccounts: Boolean) {
+    fun startGoogleAuthenticationFlow(
+        coroutineScope: CoroutineScope,
+        context: Context,
+        setFilterByAuthorizedAccounts: Boolean,
+        navigatingTo: () -> Unit
+    ) {
         coroutineScope.launch {
             try {
-                getGoogleCredentials(context,setFilterByAuthorizedAccounts)
+                getGoogleCredentials(context,setFilterByAuthorizedAccounts,navigatingTo)
             } catch (e: GetCredentialException) {
                 handleFailure(e)
             } catch (e: NoCredentialException) {
                 try {
-                    getGoogleSignInCredentials(context)
+                    getGoogleSignInCredentials(context,navigatingTo)
                 } catch (e: GetCredentialException) {
                     handleFailure(e)
                 } catch (e: NoCredentialException) {
@@ -72,24 +77,27 @@ class GoogleAuthenticationCredentialManager private constructor() {
         }
     }
 
-    private suspend fun getGoogleCredentials(context: Context, setFilterByAuthorizedAccounts: Boolean) {
-        Log.d("1two3four","Holaa $setFilterByAuthorizedAccounts")
+    private suspend fun getGoogleCredentials(
+        context: Context,
+        setFilterByAuthorizedAccounts: Boolean,
+        navigatingTo: () -> Unit
+    ) {
         val result = CredentialManager.create(context).getCredential(
             request = getGoogleCredentialRequest(googleAccessRequest(context,setFilterByAuthorizedAccounts)),
             context = context,
         )
         Log.d("1two3four",result.toString())
-        handleSignIn(result)
+        handleSignIn(result,navigatingTo)
     }
 
-    private suspend fun getGoogleSignInCredentials(context: Context) {
+    private suspend fun getGoogleSignInCredentials(context: Context, navigatingTo: () -> Unit) {
         Log.d("1two3four","Holaa")
         val result = CredentialManager.create(context).getCredential(
             request = getGoogleSignInCredentialRequest(googleSignInAccessRequest(context)),
             context = context,
         )
         Log.d("1two3four",result.toString())
-        handleSignIn(result)
+        handleSignIn(result, navigatingTo)
     }
 
     private fun handleFailure(e: Exception) {
@@ -97,7 +105,7 @@ class GoogleAuthenticationCredentialManager private constructor() {
     }
 
 
-    private fun handleSignIn(result: GetCredentialResponse) {
+    private fun handleSignIn(result: GetCredentialResponse, navigatingTo: () -> Unit) {
         when (val credential = result.credential) {
             is PublicKeyCredential -> {
                 credential.authenticationResponseJson
@@ -111,10 +119,8 @@ class GoogleAuthenticationCredentialManager private constructor() {
             is CustomCredential -> {
                 if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                     try {
-                        val googleIdTokenCredential = GoogleIdTokenCredential
-                            .createFrom(credential.data)
-                        Log.d("1two3four","${googleIdTokenCredential.id} ${googleIdTokenCredential.idToken} ${googleIdTokenCredential.displayName}")
-                        FirebaseAuthentication.instance.signInFirebaseAuthentication(googleIdTokenCredential.idToken)
+                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                        FirebaseAuthentication.instance.signInFirebaseAuthentication(googleIdTokenCredential.idToken,navigatingTo)
                     } catch (e: GoogleIdTokenParsingException) {
                         Log.e(TAG, "Received an invalid google id token response", e)
                     }

@@ -23,20 +23,22 @@ class FirebaseAuthentication {
         return auth.currentUser
     }
 
-    fun signInFirebaseAuthentication(idToken: String) {
+    fun signInFirebaseAuthentication(idToken: String, navigatingTo: () -> Unit) {
         val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
         this.auth.signInWithCredential(firebaseCredential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("Firebase_Auth_Success", "signInWithCredential:success")
+                    navigatingTo()
                 } else {
                     Log.w("Firebase_Auth_Fail", "signInWithCredential:failure", task.exception)
                 }
             }
     }
 
-    fun signOutFirebaseAuthentication() {
+    fun signOutFirebaseAuthentication(navigatingTo: () -> Unit) {
         this.auth.signOut()
+        navigatingTo()
     }
 
 }

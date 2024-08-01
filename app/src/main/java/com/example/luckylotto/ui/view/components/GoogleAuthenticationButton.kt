@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.luckylotto.R
 import com.example.luckylotto.data.core.firebase.GoogleAuthenticationCredentialManager
+import com.example.luckylotto.ui.navigation.AppNavigation
 
 @Preview(showBackground = true)
 @Composable
@@ -90,9 +91,8 @@ fun GoogleAuthenticationButton() {
                 GoogleAuthenticationCredentialManager.instance.startGoogleAuthenticationFlow(
                     coroutineScope,
                     LocalContext.current,
-                    GoogleAuthenticationCredentialManager.instance.defaultSetFilterByAuthorizedAccounts
-                )
-
+                    GoogleAuthenticationCredentialManager.instance.defaultSetFilterByAuthorizedAccounts,
+                    AppNavigation.instance.appNavigation()[1])
             }
         }
     }

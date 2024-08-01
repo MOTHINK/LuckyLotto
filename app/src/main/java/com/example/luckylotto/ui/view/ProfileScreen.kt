@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,13 +30,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.luckylotto.R
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
+import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.theme.AppGreen
+import com.example.luckylotto.ui.theme.Purple40
 
 @Composable
 fun ProfileScreen() {
@@ -68,34 +71,76 @@ private fun ProfileCard(modifier: Modifier) {
             Column(
                 modifier = modifier
                     .fillMaxWidth()
-                    .height(100.dp)
             ) {
-                Row(
-                    modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
                 ) {
-                    Box(modifier = modifier
-                        .height(100.dp)
-                        .width(100.dp),
-                        contentAlignment = Alignment.Center
+                    Row(
+                        modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        MailCard()
+                        Box(modifier = modifier
+                            .height(100.dp)
+                            .width(100.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            MailCard {}
+                        }
+                        Box(
+                            modifier = modifier
+                                .height(120.dp)
+                                .width(120.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            UserLogo()
+                        }
+                        Box(modifier = modifier
+                            .height(100.dp)
+                            .width(100.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            LogoutButton { FirebaseAuthentication.instance.signOutFirebaseAuthentication(AppNavigation.instance.appNavigation()[0]) }
+                        }
                     }
-                    Box(
-                        modifier = modifier
-                            .height(120.dp)
-                            .width(120.dp),
-                        contentAlignment = Alignment.Center
+                }
+                Spacer(modifier = modifier.height(10.dp))
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(15.dp, 0.dp)
+                ) {
+                    PurchaseCoins {}
+                }
+                Spacer(modifier = modifier.height(10.dp))
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .padding(15.dp, 0.dp)
+                ) {
+                    Row(
+                        modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        UserLogo(modifier)
-                    }
-                    Box(modifier = modifier
-                        .height(100.dp)
-                        .width(100.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        LogoutButton()
+                        Box(
+                            modifier = modifier
+                                .size(110.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CoinCounter()
+                        }
+                        Box(
+                            modifier = modifier
+                                .size(110.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            WonCounter()
+                        }
                     }
                 }
             }
@@ -104,10 +149,10 @@ private fun ProfileCard(modifier: Modifier) {
 }
 
 @Composable
-private fun UserLogo(modifier: Modifier) {
+private fun UserLogo() {
     AsyncImage(
         model = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.photoUrl.toString(),
-        modifier = modifier
+        modifier = Modifier
             .size(100.dp)
             .clip(CircleShape),
         contentDescription = "User image profile"
@@ -116,25 +161,58 @@ private fun UserLogo(modifier: Modifier) {
 
 
 @Composable
-private fun MailCard() {
+private fun MailCard(onClick: () -> Unit) {
     IconButton(
         modifier =  Modifier
             .size(85.dp),
-        onClick = { /* Handle button click */ }
+        onClick = { onClick() }
     ) {
         MessageCounter()
     }
 }
 
 @Composable
-private fun PurchaseCoins() {
+private fun PurchaseCoins(onClick: () -> Unit) {
+    val size = 50
     IconButton(
-        modifier =  Modifier
-            .size(85.dp)
-            .background(Color.Black),
-        onClick = { /* Handle button click */ }
+        modifier = Modifier
+            .shadow(
+                shape = RoundedCornerShape(15.dp),
+                spotColor = Color.Black,
+                ambientColor = Color.Black,
+                elevation = 10.dp
+            )
+            .fillMaxWidth()
+            .height(60.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .background(Purple40),
+        onClick = { onClick() }
     ) {
-        // Code here next...
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                ImageIcon(size,R.drawable.ads,"Ads")
+            }
+            Spacer(modifier = Modifier.width(20.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Purchase coins",
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
+        }
     }
 }
 
@@ -146,13 +224,7 @@ private fun MessageCounter() {
             .size(size.dp),
         contentAlignment = Alignment.Center
     ){
-        Image(
-            modifier =  Modifier
-                .size(size.dp),
-            painter = painterResource(id = R.drawable.mail),
-            contentScale = ContentScale.Crop,
-            contentDescription = "Mail"
-        )
+        ImageIcon(size,R.drawable.mail,"Message counter")
         Box(
             modifier = Modifier
                 .offset(x = 20.dp, y = (-10).dp)
@@ -160,9 +232,10 @@ private fun MessageCounter() {
                 .background(Color.Red)
         ) {
             Text(
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier
+                    .size(30.dp)
                     .align(Alignment.Center)
-                    .padding(0.dp,3.dp),
+                    .padding(0.dp, 3.dp),
                 textAlign = TextAlign.Center,
                 text = "+9",
                 fontSize = 20.sp,
@@ -172,26 +245,84 @@ private fun MessageCounter() {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-private fun LogoutButton() {
+private fun LogoutButton(onClick: () -> Unit) {
     val size = 50
     IconButton(
         modifier =  Modifier
             .size(85.dp),
-        onClick = { /* Handle button click */ }
+        onClick = { onClick() }
     ) {
         Box(
             modifier = Modifier
                 .size(size.dp),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                modifier = Modifier
-                    .size(size.dp),
-                painter = painterResource(id = R.drawable.logout),
-                contentScale = ContentScale.Crop,
-                contentDescription = "Mail"
+            ImageIcon(size,R.drawable.logout,"Logout")
+        }
+    }
+}
+
+@Composable
+private fun ImageIcon(size: Int,painter: Int,contentDescription: String) {
+    Image(
+        modifier =  Modifier
+            .size(size.dp),
+        painter = painterResource(id = painter),
+        contentScale = ContentScale.Crop,
+        contentDescription = contentDescription
+    )
+}
+
+@Composable
+private fun CoinCounter() {
+    val size = 50
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            ImageIcon(size,R.drawable.coin,"Coin counter")
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "0",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+        }
+    }
+}
+
+@Composable
+private fun WonCounter() {
+    val size = 50
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            ImageIcon(size,R.drawable.win,"Coin counter")
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "0",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
             )
         }
     }
