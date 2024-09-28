@@ -13,6 +13,7 @@ import androidx.credentials.PublicKeyCredential
 import androidx.credentials.exceptions.NoCredentialException
 import com.example.luckylotto.R
 import com.example.luckylotto.ui.util.generateNonce
+import com.example.luckylotto.ui.viewmodel.MainViewModel
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -57,16 +58,17 @@ class GoogleAuthenticationCredentialManager private constructor() {
         coroutineScope: CoroutineScope,
         context: Context,
         setFilterByAuthorizedAccounts: Boolean,
-        navigatingTo: () -> Unit
+        navigatingTo: () -> Unit,
+        mainViewModel: MainViewModel
     ) {
         coroutineScope.launch {
             try {
-                getGoogleCredentials(context,setFilterByAuthorizedAccounts,navigatingTo)
+                getGoogleCredentials(context,setFilterByAuthorizedAccounts,navigatingTo,mainViewModel)
             } catch (e: GetCredentialException) {
                 handleFailure(e)
             } catch (e: NoCredentialException) {
                 try {
-                    getGoogleSignInCredentials(context,navigatingTo)
+                    getGoogleSignInCredentials(context,navigatingTo,mainViewModel)
                 } catch (e: GetCredentialException) {
                     handleFailure(e)
                 } catch (e: NoCredentialException) {
@@ -80,24 +82,29 @@ class GoogleAuthenticationCredentialManager private constructor() {
     private suspend fun getGoogleCredentials(
         context: Context,
         setFilterByAuthorizedAccounts: Boolean,
-        navigatingTo: () -> Unit
+        navigatingTo: () -> Unit,
+        mainViewModel: MainViewModel
     ) {
         val result = CredentialManager.create(context).getCredential(
             request = getGoogleCredentialRequest(googleAccessRequest(context,setFilterByAuthorizedAccounts)),
             context = context,
         )
         Log.d("1two3four",result.toString())
-        handleSignIn(result,navigatingTo)
+        handleSignIn(result, navigatingTo, mainViewModel)
     }
 
-    private suspend fun getGoogleSignInCredentials(context: Context, navigatingTo: () -> Unit) {
+    private suspend fun getGoogleSignInCredentials(
+        context: Context,
+        navigatingTo: () -> Unit,
+        mainViewModel: MainViewModel
+    ) {
         Log.d("1two3four","Holaa")
         val result = CredentialManager.create(context).getCredential(
             request = getGoogleSignInCredentialRequest(googleSignInAccessRequest(context)),
             context = context,
         )
         Log.d("1two3four",result.toString())
-        handleSignIn(result, navigatingTo)
+        handleSignIn(result, navigatingTo,mainViewModel)
     }
 
     private fun handleFailure(e: Exception) {
@@ -105,7 +112,11 @@ class GoogleAuthenticationCredentialManager private constructor() {
     }
 
 
-    private fun handleSignIn(result: GetCredentialResponse, navigatingTo: () -> Unit) {
+    private fun handleSignIn(
+        result: GetCredentialResponse,
+        navigatingTo: () -> Unit,
+        mainViewModel: MainViewModel
+    ) {
         when (val credential = result.credential) {
             is PublicKeyCredential -> {
                 credential.authenticationResponseJson
@@ -120,7 +131,7 @@ class GoogleAuthenticationCredentialManager private constructor() {
                 if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                     try {
                         val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                        FirebaseAuthentication.instance.signInFirebaseAuthentication(googleIdTokenCredential.idToken,navigatingTo)
+                        FirebaseAuthentication.instance.signInFirebaseAuthentication(googleIdTokenCredential.idToken,navigatingTo,mainViewModel)
                     } catch (e: GoogleIdTokenParsingException) {
                         Log.e(TAG, "Received an invalid google id token response", e)
                     }

@@ -2,12 +2,13 @@ package com.example.luckylotto
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
@@ -16,15 +17,21 @@ import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
 import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.theme.LuckyLottoTheme
 import com.example.luckylotto.ui.view.components.NewCustomBottomBar
-import androidx.compose.runtime.Composable as Composable1
+import com.example.luckylotto.ui.viewmodel.MainViewModel
+import kotlinx.coroutines.flow.observeOn
 
 class MainActivity : ComponentActivity() {
     private lateinit var navController: NavController
+    private val mainViewModel: MainViewModel = MainViewModel()
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         FirebaseAuthentication.instance.initializeFirebaseAuth()
+
+        if(mainViewModel.user.value == null) {
+            mainViewModel.setFirebaseUser(FirebaseAuthentication.instance.getFirebaseCurrentUser())
+        }
 
         installSplashScreen()
 
@@ -32,14 +39,14 @@ class MainActivity : ComponentActivity() {
             LuckyLottoTheme {
                 Scaffold(
                     bottomBar = {
-                        if(FirebaseAuthentication.instance.getFirebaseCurrentUser() != null) NewCustomBottomBar(Modifier)
+                        if(mainViewModel.user.collectAsState().value != null) NewCustomBottomBar(Modifier,mainViewModel)
                     }
                 ) {
                     Surface(
                         color = MaterialTheme.colorScheme.primary
                     ) {
                         navController = rememberNavController()
-                        AppNavigation.instance.InitializeNavigation(navController)
+                        AppNavigation.instance.InitializeNavigation(navController,mainViewModel)
                         if(FirebaseAuthentication.instance.getFirebaseCurrentUser() != null) AppNavigation.instance.appNavigation()[1]()
                     }
                 }

@@ -7,11 +7,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
 import com.example.luckylotto.ui.view.LoginScreen
 import com.example.luckylotto.ui.view.PlayScreen
 import com.example.luckylotto.ui.view.ProfileScreen
+import com.example.luckylotto.ui.viewmodel.MainViewModel
 
 class AppNavigation private constructor() {
     private lateinit var navController: NavController
@@ -21,14 +21,14 @@ class AppNavigation private constructor() {
 
     @SuppressLint("ComposableNaming")
     @Composable
-    fun InitializeNavigation(navController: NavController) {
+    fun InitializeNavigation(navController: NavController, mainViewModel: MainViewModel) {
         NavHost(
             this.setNavController(navController) as NavHostController,
             remember(navController) {
                 navController.createGraph(startDestination = NavigationItem.LOGIN.route) {
-                    composable(NavigationItem.LOGIN.route) { LoginScreen() }
-                    composable(NavigationItem.PROFILE.route) { ProfileScreen() }
-                    composable(NavigationItem.PLAY.route) { PlayScreen() }
+                    composable(NavigationItem.LOGIN.route) { LoginScreen(mainViewModel) }
+                    composable(NavigationItem.PROFILE.route) { ProfileScreen(mainViewModel) }
+                    composable(NavigationItem.PLAY.route) { PlayScreen(mainViewModel) }
                 }
             }
         )

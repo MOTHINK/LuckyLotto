@@ -1,6 +1,7 @@
 package com.example.luckylotto.data.core.firebase
 
 import android.util.Log
+import com.example.luckylotto.ui.viewmodel.MainViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -23,12 +24,18 @@ class FirebaseAuthentication {
         return auth.currentUser
     }
 
-    fun signInFirebaseAuthentication(idToken: String, navigatingTo: () -> Unit) {
+    fun signInFirebaseAuthentication(
+        idToken: String,
+        navigatingTo: () -> Unit,
+        mainViewModel: MainViewModel
+    ) {
         val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
         this.auth.signInWithCredential(firebaseCredential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("Firebase_Auth_Success", "signInWithCredential:success")
+                    // Code here mainViewModel
+                    mainViewModel.setFirebaseUser(task.result.user)
                     navigatingTo()
                 } else {
                     Log.w("Firebase_Auth_Fail", "signInWithCredential:failure", task.exception)
@@ -36,8 +43,9 @@ class FirebaseAuthentication {
             }
     }
 
-    fun signOutFirebaseAuthentication(navigatingTo: () -> Unit) {
+    fun signOutFirebaseAuthentication(mainViewModel: MainViewModel, navigatingTo: () -> Unit) {
         this.auth.signOut()
+        mainViewModel.setFirebaseUser(null)
         navigatingTo()
     }
 

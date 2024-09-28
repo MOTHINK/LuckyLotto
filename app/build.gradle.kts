@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("com.google.gms.google-services")
+    id("kotlin-kapt")
 }
 
 android {
@@ -105,5 +106,7 @@ dependencies {
     implementation(libs.animated.navigation.bar)
     // Coil
     implementation(libs.coil.compose)
+    // ViewModel
+    implementation(libs.androidx.lifecycle.viewmodel.compose.v284)
 
 }

@@ -18,12 +18,14 @@ lifecycleRuntimeKtx = "2.7.0"
 activityCompose = "1.9.0"
 composeBom = "2024.04.01"
 fragmentKtx = "1.6.2"
+lifecycleViewmodelCompose = "2.8.4"
 navigationCompose = "2.7.7"
 googleServices = "4.4.1"
 firebaseAuth = "22.3.1"
 oneTapCompose = "1.0.12"
 playServicesAuth = "21.1.1"
 googleidVersion = "1.1.0"
+roomRuntime = "2.6.1"
 #composePreviewRenderer = "0.0.1-alpha01"
 
 [libraries]
@@ -35,7 +37,10 @@ androidx-credentials-play-services-auth = { module = "androidx.credentials:crede
 androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "graphicsShapes" }
 androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata", version.ref = "lifecycleRuntimeKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-viewmodel-compose-v284 = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 animated-navigation-bar = { module = "com.exyte:animated-navigation-bar", version.ref = "animatedNavigationBar" }
 appcompat-v7 = { module = "com.android.support:appcompat-v7", version.ref = "appcompatV7" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }

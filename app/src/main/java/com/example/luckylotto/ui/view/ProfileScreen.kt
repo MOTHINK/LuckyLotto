@@ -1,5 +1,10 @@
 package com.example.luckylotto.ui.view
 
+import android.util.Log
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +22,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,24 +44,27 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.luckylotto.R
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
+import com.example.luckylotto.data.core.firebase.GoogleAuthenticationCredentialManager
 import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.theme.AppGreen
 import com.example.luckylotto.ui.theme.Purple40
+import com.example.luckylotto.ui.theme.PurpleGrey40
+import com.example.luckylotto.ui.viewmodel.MainViewModel
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(mainViewModel: MainViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
             .padding(10.dp)
     ) {
-        ProfileCard(Modifier)
+        ProfileCard(mainViewModel,Modifier)
     }
 }
 
 @Composable
-private fun ProfileCard(modifier: Modifier) {
+private fun ProfileCard(mainViewModel: MainViewModel, modifier: Modifier) {
     Surface(
         modifier = modifier.shadow(
             elevation = 20.dp,
@@ -102,7 +114,7 @@ private fun ProfileCard(modifier: Modifier) {
                             .width(100.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            LogoutButton { FirebaseAuthentication.instance.signOutFirebaseAuthentication(AppNavigation.instance.appNavigation()[0]) }
+                            LogoutButton { FirebaseAuthentication.instance.signOutFirebaseAuthentication(mainViewModel,AppNavigation.instance.appNavigation()[0]) }
                         }
                     }
                 }
@@ -174,22 +186,16 @@ private fun MailCard(onClick: () -> Unit) {
 @Composable
 private fun PurchaseCoins(onClick: () -> Unit) {
     val size = 50
-    IconButton(
-        modifier = Modifier
-            .shadow(
-                shape = RoundedCornerShape(15.dp),
-                spotColor = Color.Black,
-                ambientColor = Color.Black,
-                elevation = 10.dp
-            )
-            .fillMaxWidth()
-            .height(60.dp)
-            .clip(RoundedCornerShape(15.dp))
-            .background(Purple40),
-        onClick = { onClick() }
+    Surface(
+        modifier = Modifier.fillMaxWidth().height(50.dp),
+        onClick = { onClick() },
+        shape = RoundedCornerShape(15.dp),
+        border = BorderStroke(1.dp, color = PurpleGrey40),
+        color = Purple40
     ) {
         Row(
-            Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
             Box(

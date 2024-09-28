@@ -1,5 +1,6 @@
 package com.example.luckylotto.ui.view.components
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -18,7 +19,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,19 +32,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.luckylotto.R
 import com.example.luckylotto.data.core.firebase.GoogleAuthenticationCredentialManager
 import com.example.luckylotto.ui.navigation.AppNavigation
+import com.example.luckylotto.ui.viewmodel.MainViewModel
 
-@Preview(showBackground = true)
 @Composable
-fun GoogleAuthenticationButton() {
+fun GoogleAuthenticationButton(mainViewModel: MainViewModel) {
     var clicked by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
+    var counter by remember { mutableIntStateOf(0) }
 
+    val coroutineScope = rememberCoroutineScope()
 
     Surface(
         onClick = { clicked = !clicked },
@@ -78,7 +81,9 @@ fun GoogleAuthenticationButton() {
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
-            if(clicked) {
+
+            if(clicked && counter<1) {
+                counter++
                 Spacer(modifier = Modifier.width(8.dp))
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -92,7 +97,10 @@ fun GoogleAuthenticationButton() {
                     coroutineScope,
                     LocalContext.current,
                     GoogleAuthenticationCredentialManager.instance.defaultSetFilterByAuthorizedAccounts,
-                    AppNavigation.instance.appNavigation()[1])
+                    AppNavigation.instance.appNavigation()[1],
+                    mainViewModel
+                )
+                Log.d("CheckCheck", "Logging!!")
             }
         }
     }
