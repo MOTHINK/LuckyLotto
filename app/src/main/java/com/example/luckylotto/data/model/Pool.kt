@@ -1,9 +1,14 @@
 package com.example.luckylotto.data.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "pools")
 data class Pool(
-    val poolId: String,
-    val maxPrize: Double,
-    val maxPlayers: Int,
-    val currentPlayers: Int,
-    val closeTime: Long
+    @PrimaryKey(autoGenerate = false)
+    val poolId: String = "",
+    val maxPrize: Double = 0.0,
+    val maxTickets: Int = 0,
+    val ticketsBought: Int = 0,
+    val closeTime: Long = 0L
 )

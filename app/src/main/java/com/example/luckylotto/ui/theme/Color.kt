@@ -11,4 +11,6 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val AppGreen = Color(0xFF3FBA58)
+val LotteryCardCountDownTimer = Color(0xFF03A9F4)
+val LotteryCardCountDownTimerLimit = Color(0xFFF40303)
 val MilkyYellow = Color(0xFFCFCDBF)

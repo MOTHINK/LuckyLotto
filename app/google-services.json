@@ -12,12 +12,7 @@
           "package_name": "com.example.luckylotto"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "158994278835-l5s0tpooerfd76ob66j6irt6khj749td.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyBb_kqRgHQC87URxK5JKNT1j8erb-p9tEM"

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -29,7 +28,7 @@ import com.exyte.animatednavbar.animation.indendshape.ShapeCornerRadius
 
 
 @Composable
-fun NewCustomBottomBar(modifier: Modifier,mainViewModel: MainViewModel) {
+fun NewCustomBottomBar(modifier: Modifier) {
     val appMainColor = AppGreen
     var selectedIndex by remember { mutableIntStateOf(2) }
 
@@ -76,7 +75,9 @@ fun NewCustomBottomBar(modifier: Modifier,mainViewModel: MainViewModel) {
 private fun BottomNavbarButton(onClick: () -> Unit, iconResource: Int, color: Color, contentDescription: String) {
     IconButton(
         modifier = Modifier.height(60.dp),
-        onClick = { onClick() }
+        onClick = {
+            onClick()
+        }
     ) {
         Icon(
             painter = painterResource(id = iconResource),

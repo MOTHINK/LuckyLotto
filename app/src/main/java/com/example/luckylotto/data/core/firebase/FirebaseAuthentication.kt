@@ -34,7 +34,6 @@ class FirebaseAuthentication {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("Firebase_Auth_Success", "signInWithCredential:success")
-                    // Code here mainViewModel
                     mainViewModel.setFirebaseUser(task.result.user)
                     navigatingTo()
                 } else {

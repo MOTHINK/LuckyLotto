@@ -77,7 +77,6 @@ private fun ProfileCard(mainViewModel: MainViewModel, modifier: Modifier) {
             modifier = modifier
                 .background(AppGreen)
                 .fillMaxWidth()
-                .height(300.dp)
                 .padding(10.dp)
         ) {
             Column(
@@ -99,7 +98,7 @@ private fun ProfileCard(mainViewModel: MainViewModel, modifier: Modifier) {
                             .width(100.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            MailCard {}
+                            CoinCounter()
                         }
                         Box(
                             modifier = modifier
@@ -126,34 +125,6 @@ private fun ProfileCard(mainViewModel: MainViewModel, modifier: Modifier) {
                         .padding(15.dp, 0.dp)
                 ) {
                     PurchaseCoins {}
-                }
-                Spacer(modifier = modifier.height(10.dp))
-                Column(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                        .padding(15.dp, 0.dp)
-                ) {
-                    Row(
-                        modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Box(
-                            modifier = modifier
-                                .size(110.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CoinCounter()
-                        }
-                        Box(
-                            modifier = modifier
-                                .size(110.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            WonCounter()
-                        }
-                    }
                 }
             }
         }
@@ -281,27 +252,24 @@ private fun ImageIcon(size: Int,painter: Int,contentDescription: String) {
 }
 
 @Composable
-private fun CoinCounter() {
+private fun CoinCounter(numberOfCoins: String = "000") {
     val size = 50
-    Column {
+    Row {
         Box(
-            modifier = Modifier
-                .fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
             ImageIcon(size,R.drawable.coin,"Coin counter")
         }
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.width(5.dp))
         Box(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.align(Alignment.CenterVertically),
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "0",
+                text = numberOfCoins,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+                fontSize = 25.sp
             )
         }
     }
