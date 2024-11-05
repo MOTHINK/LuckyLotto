@@ -56,7 +56,7 @@ fun NewCustomBottomBar(modifier: Modifier) {
             BottomNavbarButton({},R.drawable.add_box_filled, blackColor, playDescription)
         } else {
             BottomNavbarButton({
-                AppNavigation.instance.appNavigation()[2]()
+                AppNavigation.instance.appNavigation()[3]()
                 selectedIndex = 1
             },R.drawable.add_box, blackColor, playDescription)
         }

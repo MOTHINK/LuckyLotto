@@ -9,6 +9,7 @@ class OfflinePoolsRepository(private val poolDao: PoolDao) : PoolRepository {
     override fun getPoolStream(id: Int): Flow<Pool?> = poolDao.getPool(id)
     override suspend fun insertPool(pool: Pool) = poolDao.insert(pool)
     override suspend fun deletePool(pool: Pool) = poolDao.delete(pool)
-    override suspend fun updatePool(pool: Pool) = poolDao.update(pool)
+    override suspend fun deletePoolById(id: String) = poolDao.deletePoolById(id)
 
+    override suspend fun updatePool(pool: Pool) = poolDao.update(pool)
 }

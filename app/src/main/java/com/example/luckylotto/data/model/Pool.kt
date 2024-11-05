@@ -10,5 +10,7 @@ data class Pool(
     val maxPrize: Double = 0.0,
     val maxTickets: Int = 0,
     val ticketsBought: Int = 0,
-    val closeTime: Long = 0L
+    val startTime: Long = 0L,
+    val closeTime: Long = 0L,
+    val poolImage: String = ""
 )

@@ -11,6 +11,7 @@ import androidx.navigation.createGraph
 import com.example.luckylotto.ui.view.LoginScreen
 import com.example.luckylotto.ui.view.PlayScreen
 import com.example.luckylotto.ui.view.ProfileScreen
+import com.example.luckylotto.ui.view.components.CreatePoolScreen
 import com.example.luckylotto.ui.viewmodel.MainViewModel
 
 class AppNavigation private constructor() {
@@ -29,6 +30,7 @@ class AppNavigation private constructor() {
                     composable(NavigationItem.LOGIN.route) { LoginScreen(mainViewModel) }
                     composable(NavigationItem.PROFILE.route) { ProfileScreen(mainViewModel) }
                     composable(NavigationItem.PLAY.route) { PlayScreen(mainViewModel) }
+                    composable(NavigationItem.CREATE.route) { CreatePoolScreen(mainViewModel) }
                 }
             }
         )
@@ -42,7 +44,8 @@ class AppNavigation private constructor() {
     fun appNavigation() = listOf(
         {this.navController.navigate(NavigationItem.LOGIN.route)},
         {this.navController.navigate(NavigationItem.PROFILE.route)},
-        {this.navController.navigate(NavigationItem.PLAY.route)}
+        {this.navController.navigate(NavigationItem.PLAY.route)},
+        {this.navController.navigate(NavigationItem.CREATE.route)}
     )
 
 }

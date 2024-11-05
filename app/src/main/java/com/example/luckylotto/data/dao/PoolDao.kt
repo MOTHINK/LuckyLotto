@@ -22,4 +22,7 @@ interface PoolDao {
     @Query("SELECT * from pools")
     fun getAllPools(): Flow<List<Pool>>
 
+    @Query("DELETE from pools WHERE poolId = :id")
+    fun deletePoolById(id: String)
+
 }

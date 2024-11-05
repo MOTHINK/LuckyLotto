@@ -27,9 +27,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,44 +40,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.luckylotto.R
 import com.example.luckylotto.data.model.Pool
 import com.example.luckylotto.ui.theme.AppGreen
-import com.example.luckylotto.ui.theme.LotteryCardCountDownTimer
+import com.example.luckylotto.ui.theme.CustomLightBlue
+import com.example.luckylotto.ui.theme.CustomRed
 import com.example.luckylotto.ui.viewmodel.MainViewModel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.forEach
-import kotlinx.coroutines.launch
+import com.example.luckylotto.utils.CustomTimeFormatter
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlin.math.max
 
 @Composable
 fun PlayScreen(mainViewModel: MainViewModel) {
-    val imageList: List<String> = listOf(
-        "https://wallpapers.com/images/high/light-colour-pictures-z1hd74qvl6qjz2r7.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-vrdvfljmxy0kg095.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-o0v66q06jh6yp9bc.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-heiha21lpwl9drp0.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-shw0kdp5z6ucula7.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-z1hd74qvl6qjz2r7.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-vrdvfljmxy0kg095.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-o0v66q06jh6yp9bc.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-heiha21lpwl9drp0.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-shw0kdp5z6ucula7.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-z1hd74qvl6qjz2r7.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-vrdvfljmxy0kg095.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-o0v66q06jh6yp9bc.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-heiha21lpwl9drp0.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-shw0kdp5z6ucula7.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-z1hd74qvl6qjz2r7.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-vrdvfljmxy0kg095.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-o0v66q06jh6yp9bc.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-heiha21lpwl9drp0.webp",
-        "https://wallpapers.com/images/high/light-colour-pictures-shw0kdp5z6ucula7.webp"
-    )
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -89,25 +67,24 @@ fun PlayScreen(mainViewModel: MainViewModel) {
                 .fillMaxSize()
         ) {
             Column {
-                TopNavBarSearchPoolCard()
+                TopNavBarSearchPoolCard(mainViewModel)
                 Spacer(modifier = Modifier.height(5.dp))
-                PoolCardList(imageList,mainViewModel)
+                PoolCardList(mainViewModel)
             }
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun TopNavBarSearchPoolCard() {
-    var text by remember { mutableStateOf("") }
+fun TopNavBarSearchPoolCard(mainViewModel: MainViewModel) {
+    val text by mainViewModel.poolSearchText.collectAsState()
     val focusManager = LocalFocusManager.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
             .background(
-                AppGreen,
+                color = AppGreen,
                 shape = RoundedCornerShape(10.dp)
             )
     ) {
@@ -133,7 +110,9 @@ fun TopNavBarSearchPoolCard() {
                         )
                     },
                     value = text,
-                    onValueChange = { text = it },
+                    onValueChange = {
+                        mainViewModel.setPoolSearchText(it)
+                    },
                     singleLine = true,
                     textStyle = TextStyle(
                         fontSize = 15.sp,
@@ -157,54 +136,50 @@ fun TopNavBarSearchPoolCard() {
 }
 
 @Composable
-fun PoolCardList(imageList: List<String>, mainViewModel: MainViewModel) {
-    val coroutineScope = rememberCoroutineScope()
+fun PoolCardList(mainViewModel: MainViewModel) {
     val pools by mainViewModel.pools.collectAsState()
+    val poolSearchText by mainViewModel.poolSearchText.collectAsState()
 
-    LaunchedEffect(pools) {
-        coroutineScope.launch {
-            mainViewModel.getAllPoolsFromDatabase()
-        }
-    }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        items(mainViewModel.pools.value.size) {
-            PoolCard(pool = pools[it], imageListItem = imageList[it])
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        val filteredPools = pools.filter { it.poolId.startsWith(poolSearchText) && it.closeTime >= System.currentTimeMillis() }
+        items(filteredPools.size) {
+            PoolCard(filteredPools[it])
         }
     }
 }
 
 @Composable
-fun PoolCard(pool: Pool, imageListItem: String) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .padding(0.dp, 5.dp)
-    ) {
-        Box {
-            AsyncImage(
-                model = imageListItem,
-                contentDescription = "Image from URL",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp),
-                contentScale = ContentScale.Crop
-            )
+fun PoolCard(pool: Pool) {
+    var isVisible by remember { mutableStateOf(true) }
+
+    if(isVisible) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(0.dp, 5.dp)
+        ) {
             Box {
-                Column {
-                    PoolCardId(poolId = pool.poolId)
-                    PoolMaxPrize(pool.maxPrize.toString())
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        TicketsBought(pool.ticketsBought.toString(),pool.maxTickets.toString())
-                        CircularCountDownTimer(System.currentTimeMillis()+3600000)
+                AsyncImage(
+                    model = pool.poolImage,
+                    contentDescription = "Image from URL",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(140.dp),
+                    contentScale = ContentScale.Crop
+                )
+                Box {
+                    Column {
+                        PoolCardId(poolId = pool.poolId)
+                        PoolMaxPrize(pool.maxPrize.toString())
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            TicketsBought(pool.ticketsBought.toString(),pool.maxTickets.toString())
+                            CircularCountDownTimer(pool.startTime,pool.closeTime) { isVisible = it }
+                        }
                     }
                 }
             }
@@ -212,11 +187,27 @@ fun PoolCard(pool: Pool, imageListItem: String) {
     }
 }
 @Composable
-fun CircularCountDownTimer(time:Long) {
-    val progressTime = 1.0f
+fun CircularCountDownTimer(startTime: Long, endTime: Long, isVisible: (Boolean) -> Unit) {
+    var circularProgressIndicatorColor by remember { mutableStateOf(CustomLightBlue) }
+    var timeLeftMillis by remember { mutableLongStateOf(endTime-System.currentTimeMillis()) }
+    val percentage = ((timeLeftMillis.toFloat() / (endTime-startTime)) * 100)/100
+
+    LaunchedEffect(percentage) {
+        while (timeLeftMillis > 0) {
+            delay(1000L)
+            timeLeftMillis = max(timeLeftMillis-1000L,0)
+            Log.d("progressCircularCountDown","> $percentage beside that i want to know the value of $timeLeftMillis - and starting time is: $startTime")
+            if(percentage <= 0.25f ) {
+                circularProgressIndicatorColor = CustomRed
+            }
+        }
+        isVisible(false)
+        this.coroutineContext.cancel()
+    }
+
     Row {
         Text(
-            text = "00:00",
+            text = CustomTimeFormatter.formatMillisToTime(timeLeftMillis),
             color = Color.Black,
             textAlign = TextAlign.Center,
             fontSize = 20.sp,
@@ -228,9 +219,9 @@ fun CircularCountDownTimer(time:Long) {
                 )
         )
         CircularProgressIndicator(
-            progress = { progressTime },
+            progress = { percentage.toFloat() },
             modifier = Modifier.size(40.dp),
-            color = LotteryCardCountDownTimer,
+            color = circularProgressIndicatorColor,
             trackColor = Color.LightGray,
             strokeWidth = 4.dp
         )
@@ -258,7 +249,7 @@ fun TicketsBought(tickets: String = "0000000", maxTickets: String = "0000000") {
 @Composable
 fun PoolCardId(poolId: String) {
     Text(
-        text = "000000$poolId",
+        text = poolId,
         color = Color.Black,
         textAlign = TextAlign.Center,
         fontWeight = FontWeight.Bold,
@@ -302,7 +293,7 @@ fun PoolMaxPrize(maxPrize: String = "0000000") {
                         Color.White,
                         shape = RoundedCornerShape(5.dp)
                     ),
-                    text = maxPrize+"€",
+                    text = "$maxPrize€",
                     color = Color.Black,
                     fontWeight = FontWeight.Bold,
                     fontSize = 30.sp

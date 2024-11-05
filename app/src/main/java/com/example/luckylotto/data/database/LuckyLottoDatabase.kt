@@ -18,6 +18,7 @@ abstract class LuckyLottoDatabase : RoomDatabase() {
         fun getDatabase(context: Context): LuckyLottoDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, LuckyLottoDatabase::class.java, "LuckyLottoDatabase")
+                    .fallbackToDestructiveMigration()
                     .build()
                     .also {
                         Instance = it

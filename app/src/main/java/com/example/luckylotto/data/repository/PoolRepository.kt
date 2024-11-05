@@ -8,5 +8,6 @@ interface PoolRepository {
     fun getPoolStream(id: Int): Flow<Pool?>
     suspend fun insertPool(pool: Pool)
     suspend fun deletePool(pool: Pool)
+    suspend fun deletePoolById(id: String)
     suspend fun updatePool(pool: Pool)
 }
