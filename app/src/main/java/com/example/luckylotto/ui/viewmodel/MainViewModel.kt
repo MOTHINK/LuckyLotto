@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class MainViewModel(private val poolRepository: PoolRepository) : ViewModel() {
 
@@ -68,16 +67,22 @@ class MainViewModel(private val poolRepository: PoolRepository) : ViewModel() {
         }
     }
 
-    suspend fun createNewPoolTest(maxTickets: Int, closeTime: Long, poolImage: String) {
-        poolRepository.insertPool(
-            Pool(
-                poolId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.displayName.toString()+"#"+System.currentTimeMillis(),
-                maxTickets = maxTickets,
-                closeTime = System.currentTimeMillis()+closeTime,
-                startTime = System.currentTimeMillis(),
-                poolImage = poolImage
+    suspend fun createNewPoolTest(maxTickets: Int, closeTime: Long, poolImage: String, isPrivate: Boolean): Boolean {
+        return try {
+            poolRepository.insertPool(
+                Pool(
+                    poolId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.displayName.toString()+"#"+System.currentTimeMillis(),
+                    maxTickets = maxTickets,
+                    closeTime = System.currentTimeMillis()+closeTime,
+                    startTime = System.currentTimeMillis(),
+                    poolImage = poolImage,
+                    isPrivate = isPrivate
+                )
             )
-        )
+            true
+        } catch (_: Exception) {
+            false
+        }
     }
 
 }

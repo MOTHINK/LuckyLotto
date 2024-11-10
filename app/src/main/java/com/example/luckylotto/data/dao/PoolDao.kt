@@ -19,7 +19,7 @@ interface PoolDao {
     suspend fun delete(pool: Pool)
     @Query("SELECT * from pools WHERE poolId = :id")
     fun getPool(id: Int): Flow<Pool>
-    @Query("SELECT * from pools WHERE closeTime > :currentTime")
+    @Query("SELECT * from pools WHERE closeTime > :currentTime AND isPrivate = 0")
     fun getAllPools(currentTime: Long): Flow<List<Pool>>
 
     @Query("DELETE from pools WHERE poolId = :id")

@@ -19,11 +19,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchColors
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,9 +52,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.theme.AppGreen
 import com.example.luckylotto.ui.theme.CustomBlue
 import com.example.luckylotto.ui.viewmodel.MainViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlin.math.round
 
@@ -56,9 +65,15 @@ fun CreatePoolScreen(mainViewModel: MainViewModel) {
     var maxTickets by remember { mutableIntStateOf(mainViewModel.maxTicketValues[0]) }
     var closeTime by remember { mutableLongStateOf(3600000L*mainViewModel.maxTimeValues[0]) }
     var poolImage by remember { mutableStateOf(mainViewModel.imageList[0]) }
+    var isPrivate by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxSize().background(Color.White).padding(10.dp)) {
-        Box(modifier = Modifier.fillMaxSize().background(color = AppGreen, shape = RoundedCornerShape(10.dp))) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.White)
+        .padding(10.dp)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(color = AppGreen, shape = RoundedCornerShape(10.dp))) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
                     TitleRow()
@@ -69,10 +84,23 @@ fun CreatePoolScreen(mainViewModel: MainViewModel) {
                     Spacer(modifier = Modifier.height(10.dp))
                     ImagePickerRow(mainViewModel) { value -> poolImage = value }
                     Spacer(modifier = Modifier.height(10.dp))
-                    CreatePoolButtonRow(mainViewModel,maxTickets,closeTime,poolImage)
+                    PrivateOption() { isPrivate = it }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    CreatePoolButtonRow(mainViewModel,maxTickets,closeTime,poolImage,isPrivate)
                 }
             }
         }
+    }
+}
+
+@Composable
+fun PrivateOption(isPrivate: (Boolean) -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        LabelText("Private Pool")
+        SwitchWithCustomIconDemo(isPrivate)
     }
 }
 
@@ -145,10 +173,16 @@ fun ImagePickerRow(mainViewModel: MainViewModel, poolImageValue: (String) -> Uni
 }
 
 @Composable
-fun CreatePoolButtonRow(mainViewModel: MainViewModel,maxTickets: Int,closeTime: Long,poolImage: String) {
+fun CreatePoolButtonRow(
+    mainViewModel: MainViewModel,
+    maxTickets: Int,
+    closeTime: Long,
+    poolImage: String,
+    isPrivate: Boolean
+) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            CreateNewPoolButton(mainViewModel,maxTickets,closeTime,poolImage)
+            CreateNewPoolButton(mainViewModel,maxTickets,closeTime,poolImage,isPrivate)
         }
     }
 }
@@ -156,9 +190,8 @@ fun CreatePoolButtonRow(mainViewModel: MainViewModel,maxTickets: Int,closeTime: 
 
 
 @Composable
-fun CreateNewPoolButton(mainViewModel: MainViewModel, maxTickets: Int, closeTime: Long, poolImage: String) {
+fun CreateNewPoolButton(mainViewModel: MainViewModel, maxTickets: Int, closeTime: Long, poolImage: String, isPrivate: Boolean) {
     val coroutineScope = rememberCoroutineScope()
-
     Button(
         modifier = Modifier
             .padding(20.dp, 0.dp)
@@ -167,7 +200,13 @@ fun CreateNewPoolButton(mainViewModel: MainViewModel, maxTickets: Int, closeTime
         onClick = {
             Log.d("CreateNewPoolButtonTest", "$maxTickets - $closeTime - $poolImage")
             coroutineScope.launch {
-                mainViewModel.createNewPoolTest(maxTickets,closeTime,poolImage)
+                if(
+                    this.async {
+                        mainViewModel.createNewPoolTest(maxTickets,closeTime,poolImage,isPrivate)
+                    }.await()
+                ) {
+                    AppNavigation.instance.appNavigation()[2]()
+                }
             }
         },
         shape = ShapeDefaults.Small,
@@ -189,7 +228,7 @@ fun HorizontalImagePicker(mainViewModel: MainViewModel, selectedImageIndex: Int,
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp)
+            .height(120.dp)
             .padding(20.dp, 0.dp)
             .clip(CircleShape)
             .background(Color.White)
@@ -225,7 +264,7 @@ fun SelectedImage(poolImage: String, position: Int, index: Int, indexChange: (In
     Box(
         modifier = Modifier
             .fillMaxHeight()
-            .width(150.dp)
+            .width(120.dp)
             .clip(CircleShape)
             .padding(5.dp)
             .border(
@@ -295,5 +334,58 @@ fun LabelText(text: String) {
         text = " $text ",
         color = Color.White,
         fontWeight = FontWeight.Bold
+    )
+}
+
+/*** Base Code  Starts here. ***/
+@Composable
+fun SwitchWithCustomIcon(
+    modifier: Modifier = Modifier,
+    isChecked: Boolean = false,
+    enabled: Boolean = true,
+    colors: SwitchColors = SwitchDefaults.colors(),
+    thumbContent: (@Composable () -> Unit)? = null,
+    onCheckedChange: ((Boolean) -> Unit)?
+) {
+    Switch(
+        modifier = modifier,
+        checked = isChecked,
+        enabled = enabled,
+        colors = colors,
+        thumbContent = thumbContent,
+        onCheckedChange = onCheckedChange
+    )
+}
+
+@Composable
+fun SwitchWithCustomIconDemo(isPrivate: (Boolean) -> Unit) {
+    val checkedState = remember { mutableStateOf(false) }
+
+    SwitchWithCustomIcon(
+        isChecked = checkedState.value,
+        colors = SwitchDefaults.colors(
+            checkedThumbColor = AppGreen,
+            uncheckedThumbColor = CustomBlue,
+            checkedTrackColor = CustomBlue,
+            uncheckedTrackColor = Color(0xFFFF3849),
+            checkedBorderColor = CustomBlue,
+            uncheckedBorderColor = Color(0xFFFF3849)
+        ),
+        thumbContent = {
+            Icon(
+                imageVector = if (checkedState.value) {
+                    Icons.Filled.Check
+                } else {
+                    Icons.Filled.Close
+                },
+                tint = Color.White,
+                contentDescription = "Thumb Icon",
+                modifier = Modifier.size(20.dp)
+            )
+        },
+        onCheckedChange = {
+            checkedState.value = it
+            isPrivate(it)
+        }
     )
 }

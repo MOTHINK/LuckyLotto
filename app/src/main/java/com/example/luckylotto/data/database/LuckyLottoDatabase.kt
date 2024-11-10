@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.example.luckylotto.data.dao.PoolDao
 import com.example.luckylotto.data.model.Pool
 
-@Database(entities = [Pool::class], version = 1, exportSchema = false)
+@Database(entities = [Pool::class], version = 2, exportSchema = false)
 abstract class LuckyLottoDatabase : RoomDatabase() {
 
     abstract fun poolDao(): PoolDao

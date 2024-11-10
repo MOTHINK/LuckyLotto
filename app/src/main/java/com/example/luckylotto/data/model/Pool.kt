@@ -12,5 +12,6 @@ data class Pool(
     val ticketsBought: Int = 0,
     val startTime: Long = 0L,
     val closeTime: Long = 0L,
-    val poolImage: String = ""
+    val poolImage: String = "",
+    val isPrivate: Boolean = false
 )

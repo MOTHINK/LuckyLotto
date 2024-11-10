@@ -3,6 +3,7 @@ package com.example.luckylotto.data.core.firebase
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.credentials.GetCredentialException
+import android.os.Build
 import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -62,19 +63,21 @@ class GoogleAuthenticationCredentialManager private constructor() {
         mainViewModel: MainViewModel
     ) {
         coroutineScope.launch {
-            try {
-                getGoogleCredentials(context,setFilterByAuthorizedAccounts,navigatingTo,mainViewModel)
-            } catch (e: GetCredentialException) {
-                handleFailure(e)
-            } catch (e: NoCredentialException) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 try {
-                    getGoogleSignInCredentials(context,navigatingTo,mainViewModel)
+                    getGoogleCredentials(context,setFilterByAuthorizedAccounts,navigatingTo,mainViewModel)
                 } catch (e: GetCredentialException) {
                     handleFailure(e)
                 } catch (e: NoCredentialException) {
+                    try {
+                        getGoogleSignInCredentials(context,navigatingTo,mainViewModel)
+                    } catch (e: GetCredentialException) {
+                        handleFailure(e)
+                    } catch (e: NoCredentialException) {
+                        handleFailure(e)
+                    }
                     handleFailure(e)
                 }
-                handleFailure(e)
             }
         }
     }
