@@ -1,20 +1,21 @@
 package com.example.luckylotto.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
 import com.example.luckylotto.data.model.Pool
 import com.example.luckylotto.data.repository.PoolRepository
 import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.forEach
-import kotlinx.coroutines.flow.toCollection
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class MainViewModel(private val poolRepository: PoolRepository) : ViewModel() {
+
+    val maxTicketValues = listOf(50, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000)
+    val maxTimeValues = listOf(1,6,12,24,48,72,168,336,672)
 
     val imageList: List<String> = listOf(
         "https://wallpapers.com/images/high/light-colour-pictures-z1hd74qvl6qjz2r7.webp",
@@ -62,13 +63,21 @@ class MainViewModel(private val poolRepository: PoolRepository) : ViewModel() {
         _poolSearchText.update { searchText }
     }
     private suspend fun getAllPoolsFromDatabase() {
-        poolRepository.getAllPoolsStream().collect { pools ->
+        poolRepository.getAllPoolsStream(System.currentTimeMillis()).collect { pools ->
             _pools.value = pools
         }
     }
 
-    suspend fun createNewPoolTest(pool: Pool) {
-        poolRepository.insertPool(pool)
+    suspend fun createNewPoolTest(maxTickets: Int, closeTime: Long, poolImage: String) {
+        poolRepository.insertPool(
+            Pool(
+                poolId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.displayName.toString()+"#"+System.currentTimeMillis(),
+                maxTickets = maxTickets,
+                closeTime = System.currentTimeMillis()+closeTime,
+                startTime = System.currentTimeMillis(),
+                poolImage = poolImage
+            )
+        )
     }
 
 }

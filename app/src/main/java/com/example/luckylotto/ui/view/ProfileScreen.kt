@@ -47,6 +47,8 @@ import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
 import com.example.luckylotto.data.core.firebase.GoogleAuthenticationCredentialManager
 import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.theme.AppGreen
+import com.example.luckylotto.ui.theme.CustomBlue
+import com.example.luckylotto.ui.theme.CustomDarkBlue
 import com.example.luckylotto.ui.theme.Purple40
 import com.example.luckylotto.ui.theme.PurpleGrey40
 import com.example.luckylotto.ui.viewmodel.MainViewModel
@@ -161,8 +163,8 @@ private fun PurchaseCoins(onClick: () -> Unit) {
         modifier = Modifier.fillMaxWidth().height(50.dp),
         onClick = { onClick() },
         shape = RoundedCornerShape(15.dp),
-        border = BorderStroke(1.dp, color = PurpleGrey40),
-        color = Purple40
+        border = BorderStroke(1.dp, color = CustomDarkBlue),
+        color = CustomBlue
     ) {
         Row(
             modifier = Modifier

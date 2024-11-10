@@ -4,7 +4,7 @@ import com.example.luckylotto.data.model.Pool
 import kotlinx.coroutines.flow.Flow
 
 interface PoolRepository {
-    fun getAllPoolsStream(): Flow<List<Pool>>
+    fun getAllPoolsStream(currentTime: Long): Flow<List<Pool>>
     fun getPoolStream(id: Int): Flow<Pool?>
     suspend fun insertPool(pool: Pool)
     suspend fun deletePool(pool: Pool)

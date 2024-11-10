@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,6 +54,7 @@ import com.example.luckylotto.utils.CustomTimeFormatter
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlin.math.max
+import kotlin.math.round
 
 @Composable
 fun PlayScreen(mainViewModel: MainViewModel) {
@@ -141,7 +143,7 @@ fun PoolCardList(mainViewModel: MainViewModel) {
     val poolSearchText by mainViewModel.poolSearchText.collectAsState()
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        val filteredPools = pools.filter { it.poolId.startsWith(poolSearchText) && it.closeTime >= System.currentTimeMillis() }
+        val filteredPools = pools.filter { it.poolId.startsWith(poolSearchText) && it.closeTime >= System.currentTimeMillis() }.toList()
         items(filteredPools.size) {
             PoolCard(filteredPools[it])
         }
@@ -151,7 +153,6 @@ fun PoolCardList(mainViewModel: MainViewModel) {
 @Composable
 fun PoolCard(pool: Pool) {
     var isVisible by remember { mutableStateOf(true) }
-
     if(isVisible) {
         Card(
             modifier = Modifier
@@ -178,7 +179,7 @@ fun PoolCard(pool: Pool) {
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             TicketsBought(pool.ticketsBought.toString(),pool.maxTickets.toString())
-                            CircularCountDownTimer(pool.startTime,pool.closeTime) { isVisible = it }
+                            CircularCountDownTimer(pool.startTime, pool.closeTime,isVisible = { isVisible = it })
                         }
                     }
                 }
@@ -193,10 +194,11 @@ fun CircularCountDownTimer(startTime: Long, endTime: Long, isVisible: (Boolean) 
     val percentage = ((timeLeftMillis.toFloat() / (endTime-startTime)) * 100)/100
 
     LaunchedEffect(percentage) {
+        timeLeftMillis = endTime-System.currentTimeMillis()
         while (timeLeftMillis > 0) {
             delay(1000L)
             timeLeftMillis = max(timeLeftMillis-1000L,0)
-            Log.d("progressCircularCountDown","> $percentage beside that i want to know the value of $timeLeftMillis - and starting time is: $startTime")
+            Log.d("progressCircularCountDown", "> $percentage% - TimeLeft: $timeLeftMillis - StartTime: $startTime")
             if(percentage <= 0.25f ) {
                 circularProgressIndicatorColor = CustomRed
             }
@@ -260,7 +262,8 @@ fun PoolCardId(poolId: String) {
             .background(
                 Color.White,
                 shape = RoundedCornerShape(5.dp)
-            )
+            ),
+        maxLines = 1
     )
 }
 
