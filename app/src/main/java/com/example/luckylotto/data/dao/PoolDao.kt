@@ -21,7 +21,6 @@ interface PoolDao {
     fun getPool(id: Int): Flow<Pool>
     @Query("SELECT * from pools WHERE closeTime > :currentTime AND isPrivate = 0")
     fun getAllPools(currentTime: Long): Flow<List<Pool>>
-
     @Query("DELETE from pools WHERE poolId = :id")
     fun deletePoolById(id: String)
 

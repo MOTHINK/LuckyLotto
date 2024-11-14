@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class Pool(
     @PrimaryKey(autoGenerate = false)
     val poolId: String = "",
+    val userId: String = "",
     val maxPrize: Double = 0.0,
     val maxTickets: Int = 0,
     val ticketsBought: Int = 0,

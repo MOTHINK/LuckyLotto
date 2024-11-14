@@ -72,6 +72,7 @@ class MainViewModel(private val poolRepository: PoolRepository) : ViewModel() {
             poolRepository.insertPool(
                 Pool(
                     poolId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.displayName.toString()+"#"+System.currentTimeMillis(),
+                    userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.uid.toString(),
                     maxTickets = maxTickets,
                     closeTime = System.currentTimeMillis()+closeTime,
                     startTime = System.currentTimeMillis(),

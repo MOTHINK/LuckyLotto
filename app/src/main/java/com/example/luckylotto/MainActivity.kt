@@ -76,7 +76,7 @@ class MainActivity : ComponentActivity() {
 
     private suspend fun createPoolsTesting() {
         for (i in 11..20) {
-            container.poolRepository.insertPool(Pool("id$i",10.0*i,1000*i,50*i,System.currentTimeMillis(),System.currentTimeMillis()+(60000L*60),mainViewModel.imageList[i-10]))
+            container.poolRepository.insertPool(Pool("id$i",FirebaseAuthentication.instance.getFirebaseCurrentUser()?.uid.toString(),10.0*i,1000*i,50*i,System.currentTimeMillis(),System.currentTimeMillis()+(60000L*60),mainViewModel.imageList[i-10]))
         }
     }
 

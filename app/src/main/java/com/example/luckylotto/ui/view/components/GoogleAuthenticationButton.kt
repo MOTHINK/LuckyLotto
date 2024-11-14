@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.luckylotto.R
-import com.example.luckylotto.data.core.firebase.GoogleAuthenticationCredentialManager
+import com.example.luckylotto.data.core.credential_manager.GoogleAuthenticationCredentialManager
 import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.viewmodel.MainViewModel
 

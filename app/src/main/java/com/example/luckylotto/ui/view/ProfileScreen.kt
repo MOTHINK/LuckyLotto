@@ -1,9 +1,5 @@
 package com.example.luckylotto.ui.view
 
-import android.util.Log
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,9 +16,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,23 +31,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.luckylotto.R
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
-import com.example.luckylotto.data.core.firebase.GoogleAuthenticationCredentialManager
 import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.theme.AppGreen
 import com.example.luckylotto.ui.theme.CustomBlue
 import com.example.luckylotto.ui.theme.CustomDarkBlue
-import com.example.luckylotto.ui.theme.Purple40
-import com.example.luckylotto.ui.theme.PurpleGrey40
+import com.example.luckylotto.ui.view.components.CountDownDateTime
+import com.example.luckylotto.ui.view.components.PoolCardId
+import com.example.luckylotto.ui.view.components.TicketsBought
 import com.example.luckylotto.ui.viewmodel.MainViewModel
 
 @Composable
@@ -61,7 +62,116 @@ fun ProfileScreen(mainViewModel: MainViewModel) {
             .background(Color.White)
             .padding(10.dp)
     ) {
-        ProfileCard(mainViewModel,Modifier)
+        Column(modifier = Modifier
+            .fillMaxSize()) {
+            ProfileCard(mainViewModel,Modifier)
+            Spacer(modifier = Modifier.height(10.dp))
+            TicketCardList(mainViewModel)
+        }
+    }
+}
+
+@Composable
+fun TicketCardList(mainViewModel: MainViewModel) {
+    LazyColumn(modifier = Modifier
+        .fillMaxSize()) {
+        items(100) {
+            TicketCard()
+            if(it < 99) Spacer(modifier = Modifier.height(10.dp))
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TicketCard() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .clip(RoundedCornerShape(10.dp))
+    ) {
+        AsyncImage(
+            model = "https://wallpapers.com/images/high/light-colour-pictures-z1hd74qvl6qjz2r7.webp",
+            contentDescription = "Image from URL",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp),
+            contentScale = ContentScale.Crop
+        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    ShareButton {}
+                    PoolCardId(poolId = "0")
+                }
+                TicketNumbers("123456")
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TicketsBought("0","1000")
+                    CountDownDateTime(1731533658265) // close time
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ShareButton(share: () -> Unit) {
+    Button(
+        modifier = Modifier
+            .size(40.dp)
+            .padding(5.dp)
+            .background(AppGreen),
+        onClick = {
+            share()
+        },
+        shape = RectangleShape
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.share),
+            contentDescription = null,
+            modifier = Modifier.size(20.dp)  // Set size as needed
+        )
+    }
+}
+
+@Composable
+fun TicketNumbers(num: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(105.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            for(i in 0..5) {
+                Box(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .background(
+                            Color.White,
+                            RoundedCornerShape(50.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "${num[i]}", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                }
+                Spacer(modifier = Modifier.width(3.dp))
+            }
+        }
     }
 }
 
@@ -160,7 +270,9 @@ private fun MailCard(onClick: () -> Unit) {
 private fun PurchaseCoins(onClick: () -> Unit) {
     val size = 50
     Surface(
-        modifier = Modifier.fillMaxWidth().height(50.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
         onClick = { onClick() },
         shape = RoundedCornerShape(15.dp),
         border = BorderStroke(1.dp, color = CustomDarkBlue),

@@ -1,4 +1,4 @@
-package com.example.luckylotto.data.core.firebase
+package com.example.luckylotto.data.core.credential_manager
 
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -13,6 +13,7 @@ import androidx.credentials.PasswordCredential
 import androidx.credentials.PublicKeyCredential
 import androidx.credentials.exceptions.NoCredentialException
 import com.example.luckylotto.R
+import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
 import com.example.luckylotto.ui.util.generateNonce
 import com.example.luckylotto.ui.viewmodel.MainViewModel
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -92,7 +93,6 @@ class GoogleAuthenticationCredentialManager private constructor() {
             request = getGoogleCredentialRequest(googleAccessRequest(context,setFilterByAuthorizedAccounts)),
             context = context,
         )
-        Log.d("1two3four",result.toString())
         handleSignIn(result, navigatingTo, mainViewModel)
     }
 
@@ -101,12 +101,10 @@ class GoogleAuthenticationCredentialManager private constructor() {
         navigatingTo: () -> Unit,
         mainViewModel: MainViewModel
     ) {
-        Log.d("1two3four","Holaa")
         val result = CredentialManager.create(context).getCredential(
             request = getGoogleSignInCredentialRequest(googleSignInAccessRequest(context)),
             context = context,
         )
-        Log.d("1two3four",result.toString())
         handleSignIn(result, navigatingTo,mainViewModel)
     }
 
