@@ -3,6 +3,7 @@ package com.example.luckylotto.ui.view
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,29 +20,33 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.example.luckylotto.R
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
@@ -75,24 +80,30 @@ fun ProfileScreen(mainViewModel: MainViewModel) {
 fun TicketCardList(mainViewModel: MainViewModel) {
     LazyColumn(modifier = Modifier
         .fillMaxSize()) {
-        items(100) {
-            TicketCard()
-            if(it < 99) Spacer(modifier = Modifier.height(10.dp))
+        items(20) {
+            TicketCard(mainViewModel,it)
+            if(it < 19) Spacer(modifier = Modifier.height(10.dp))
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun TicketCard() {
+fun TicketCard(mainViewModel: MainViewModel, i: Int) {
+    var showUp by remember { mutableStateOf(false) }
+    if(showUp) {
+        DialogWithImage({}, {}, painterResource(id = R.drawable.coin), "")
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp)
             .clip(RoundedCornerShape(10.dp))
+            .clickable {
+                showUp = !showUp
+            }
     ) {
         AsyncImage(
-            model = "https://wallpapers.com/images/high/light-colour-pictures-z1hd74qvl6qjz2r7.webp",
+            model = mainViewModel.imageList[i],
             contentDescription = "Image from URL",
             modifier = Modifier
                 .fillMaxWidth()
@@ -105,7 +116,6 @@ fun TicketCard() {
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    ShareButton {}
                     PoolCardId(poolId = "0")
                 }
                 TicketNumbers("123456")
@@ -114,34 +124,14 @@ fun TicketCard() {
                         .fillMaxWidth()
                         .height(50.dp)
                         .background(MaterialTheme.colorScheme.surfaceVariant),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     TicketsBought("0","1000")
-                    CountDownDateTime(1731533658265) // close time
+                    CountDownDateTime(1731893658265L) // close time
                 }
             }
         }
-    }
-}
-
-
-@Composable
-fun ShareButton(share: () -> Unit) {
-    Button(
-        modifier = Modifier
-            .size(40.dp)
-            .padding(5.dp)
-            .background(AppGreen),
-        onClick = {
-            share()
-        },
-        shape = RectangleShape
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.share),
-            contentDescription = null,
-            modifier = Modifier.size(20.dp)  // Set size as needed
-        )
     }
 }
 
@@ -415,3 +405,60 @@ private fun WonCounter() {
         }
     }
 }
+
+@Composable
+fun DialogWithImage(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    painter: Painter,
+    imageDescription: String,
+) {
+    Dialog(onDismissRequest = { onDismissRequest() }) {
+        // Draw a rectangle shape with rounded corners inside the dialog
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(375.dp)
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Image(
+                    painter = painter,
+                    contentDescription = imageDescription,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .height(160.dp)
+                )
+                Text(
+                    text = "This is a dialog with buttons and an image.",
+                    modifier = Modifier.padding(16.dp),
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    TextButton(
+                        onClick = { onDismissRequest() },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text("Dismiss")
+                    }
+                    TextButton(
+                        onClick = { onConfirmation() },
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Text("Confirm")
+                    }
+                }
+            }
+        }
+    }
+}
+

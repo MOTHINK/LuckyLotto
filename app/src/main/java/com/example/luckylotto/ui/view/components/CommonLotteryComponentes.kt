@@ -174,7 +174,7 @@ fun PoolMaxPrize(maxPrize: String = "0000000") {
 
 @Composable
 fun CountDownDateTime(millis: Long) {
-    val dateFormat = SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("dd/MM/yy - HH:mm", Locale.getDefault())
     val date = Date(millis)
 
     Row {
