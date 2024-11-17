@@ -1,4 +1,4 @@
-package com.example.luckylotto.ui.view.components
+package com.example.luckylotto.ui.view.login
 
 import android.util.Log
 import androidx.compose.animation.animateContentSize

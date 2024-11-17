@@ -8,10 +8,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.createGraph
-import com.example.luckylotto.ui.view.LoginScreen
-import com.example.luckylotto.ui.view.PlayScreen
-import com.example.luckylotto.ui.view.ProfileScreen
-import com.example.luckylotto.ui.view.CreatePoolScreen
+import com.example.luckylotto.ui.view.login.LoginScreen
+import com.example.luckylotto.ui.view.play.PlayScreen
+import com.example.luckylotto.ui.view.profile.ProfileScreen
+import com.example.luckylotto.ui.view.create.CreatePoolScreen
 import com.example.luckylotto.ui.viewmodel.MainViewModel
 
 class AppNavigation private constructor() {

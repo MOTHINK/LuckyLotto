@@ -193,3 +193,28 @@ fun CountDownDateTime(millis: Long) {
         Spacer(modifier = Modifier.width(10.dp))
     }
 }
+
+@Composable
+fun TicketNumbers(num: String, modifier: Modifier) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(105.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            for(i in 0..5) {
+                Box(
+                    modifier = modifier,
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "${num[i]}", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                }
+                Spacer(modifier = Modifier.width(3.dp))
+            }
+        }
+    }
+}
