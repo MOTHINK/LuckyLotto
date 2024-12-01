@@ -27,7 +27,7 @@ import com.exyte.animatednavbar.animation.indendshape.ShapeCornerRadius
 @Composable
 fun NewCustomBottomBar(mainViewModel: MainViewModel, modifier: Modifier) {
     val appMainColor = AppGreen
-    val selectedIndex by mainViewModel.fIndex.collectAsState()
+    val selectedIndex by mainViewModel.navBarIndex.collectAsState()
 
     AnimatedNavigationBar(
         modifier = modifier.padding(10.dp, 0.dp, 10.dp, 10.dp).fillMaxWidth(),
@@ -46,7 +46,7 @@ fun NewCustomBottomBar(mainViewModel: MainViewModel, modifier: Modifier) {
         } else {
             BottomNavbarButton(
                 {
-                    mainViewModel.setFIndex(0)
+                    mainViewModel.setNavBarIndex(0)
                     AppNavigation.instance.appNavigation()[2]()
                 },
                 R.drawable.ticket, blackColor, playDescription
@@ -57,7 +57,7 @@ fun NewCustomBottomBar(mainViewModel: MainViewModel, modifier: Modifier) {
         } else {
             BottomNavbarButton(
                 {
-                    mainViewModel.setFIndex(1)
+                    mainViewModel.setNavBarIndex(1)
                     AppNavigation.instance.appNavigation()[3]()
                 },
                 R.drawable.add_box, blackColor, playDescription
@@ -68,7 +68,7 @@ fun NewCustomBottomBar(mainViewModel: MainViewModel, modifier: Modifier) {
         } else {
             BottomNavbarButton(
                 {
-                    mainViewModel.setFIndex(2)
+                    mainViewModel.setNavBarIndex(2)
                     AppNavigation.instance.appNavigation()[1]()
                 },
                 R.drawable.profile, blackColor, profileDescription

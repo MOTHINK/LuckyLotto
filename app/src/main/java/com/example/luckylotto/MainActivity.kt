@@ -30,10 +30,11 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var navController: NavController
     private lateinit var mainViewModel: MainViewModel
     private lateinit var container: AppContainer
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition",
+        "StateFlowValueCalledInComposition"
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -60,8 +61,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding),
                         color = MaterialTheme.colorScheme.primary
                     ) {
-                        navController = rememberNavController()
-                        AppNavigation.instance.InitializeNavigation(navController,mainViewModel)
+                        AppNavigation.instance.InitializeNavigation(mainViewModel)
                         if(FirebaseAuthentication.instance.getFirebaseCurrentUser() != null) {
                             AppNavigation.instance.appNavigation()[1]()
                         }

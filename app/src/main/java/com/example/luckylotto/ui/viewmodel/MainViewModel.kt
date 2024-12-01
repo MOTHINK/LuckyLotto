@@ -3,17 +3,12 @@ package com.example.luckylotto.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
 import com.example.luckylotto.data.model.Pool
 import com.example.luckylotto.data.model.Ticket
 import com.example.luckylotto.data.repository.pool_repository.PoolRepository
 import com.example.luckylotto.data.repository.ticket_repository.TicketRepository
 import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -25,8 +20,8 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     private val _snackBarMessage: MutableStateFlow<String> = MutableStateFlow<String>("")
     val snackBarMessage: StateFlow<String> = _snackBarMessage
 
-    private val _fIndex: MutableStateFlow<Int> = MutableStateFlow<Int>(2)
-    val fIndex: StateFlow<Int> = _fIndex
+    private val _navBarIndex: MutableStateFlow<Int> = MutableStateFlow<Int>(2)
+    val navBarIndex: StateFlow<Int> = _navBarIndex
 
     val maxTicketValues = listOf(50, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000)
     val maxTimeValues = listOf(1,6,12,24,48,72,168,336,672)
@@ -78,8 +73,8 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         }
     }
 
-    fun setFIndex(index: Int) {
-        _fIndex.value = index
+    fun setNavBarIndex(index: Int) {
+        _navBarIndex.value = index
     }
 
     fun setSnackBarMessage(message: String) {
