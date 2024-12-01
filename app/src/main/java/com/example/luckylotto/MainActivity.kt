@@ -7,21 +7,22 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
 import com.example.luckylotto.data.database.AppContainer
 import com.example.luckylotto.data.database.AppDataContainer
-import com.example.luckylotto.data.database.LuckyLottoDatabase
 import com.example.luckylotto.data.model.Pool
 import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.theme.LuckyLottoTheme
 import com.example.luckylotto.ui.view.components.NewCustomBottomBar
+import com.example.luckylotto.ui.view.create.CreatingPoolSnackBarMessage
 import com.example.luckylotto.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,25 +38,23 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         container = AppDataContainer(this)
-        mainViewModel = MainViewModel(container.poolRepository)
-        FirebaseAuthentication.instance.initializeFirebaseAuth()
+        mainViewModel = MainViewModel(container.poolRepository,container.ticketRepository)
 
+        if(mainViewModel.user.value == null) {
+            mainViewModel.setFirebaseUser(FirebaseAuthentication.instance.getFirebaseCurrentUser())
+        }
 
 //        CoroutineScope(Dispatchers.IO).launch {
 //            createPoolsTesting()
 //            deletePoolsTesting()
 //        }
 
-        if(mainViewModel.user.value == null) {
-            mainViewModel.setFirebaseUser(FirebaseAuthentication.instance.getFirebaseCurrentUser())
-        }
-
         installSplashScreen()
-
         setContent {
             LuckyLottoTheme {
                 Scaffold(
-                    bottomBar = { if(mainViewModel.user.collectAsState().value != null) NewCustomBottomBar(Modifier) }
+                    bottomBar = { if(mainViewModel.user.collectAsState().value != null) NewCustomBottomBar(mainViewModel,Modifier) },
+                    snackbarHost = { CreatingPoolSnackBarMessage(mainViewModel) }
                 ) { innerPadding ->
                     Surface(
                         modifier = Modifier.padding(innerPadding),
@@ -63,7 +62,9 @@ class MainActivity : ComponentActivity() {
                     ) {
                         navController = rememberNavController()
                         AppNavigation.instance.InitializeNavigation(navController,mainViewModel)
-                        if(FirebaseAuthentication.instance.getFirebaseCurrentUser() != null) AppNavigation.instance.appNavigation()[1]()
+                        if(FirebaseAuthentication.instance.getFirebaseCurrentUser() != null) {
+                            AppNavigation.instance.appNavigation()[1]()
+                        }
                     }
                 }
             }
@@ -76,7 +77,7 @@ class MainActivity : ComponentActivity() {
 
     private suspend fun createPoolsTesting() {
         for (i in 11..20) {
-            container.poolRepository.insertPool(Pool("id$i",FirebaseAuthentication.instance.getFirebaseCurrentUser()?.uid.toString(),10.0*i,1000*i,50*i,System.currentTimeMillis(),System.currentTimeMillis()+(60000L*60),mainViewModel.imageList[i-10]))
+            container.poolRepository.insertPool(Pool("id$i",FirebaseAuthentication.instance.getFirebaseCurrentUser()?.uid.toString(),"",10.0*i,1000*i,50*i,System.currentTimeMillis(),System.currentTimeMillis()+(60000L*60),mainViewModel.imageList[i-10]))
         }
     }
 

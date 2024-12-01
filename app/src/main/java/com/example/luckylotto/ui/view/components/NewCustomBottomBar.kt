@@ -1,6 +1,5 @@
 package com.example.luckylotto.ui.view.components
 
-import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -9,10 +8,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -26,17 +24,13 @@ import com.exyte.animatednavbar.animation.balltrajectory.Straight
 import com.exyte.animatednavbar.animation.indendshape.Height
 import com.exyte.animatednavbar.animation.indendshape.ShapeCornerRadius
 
-
 @Composable
-fun NewCustomBottomBar(modifier: Modifier) {
+fun NewCustomBottomBar(mainViewModel: MainViewModel, modifier: Modifier) {
     val appMainColor = AppGreen
-    var selectedIndex by remember { mutableIntStateOf(2) }
+    val selectedIndex by mainViewModel.fIndex.collectAsState()
 
     AnimatedNavigationBar(
-        modifier = modifier
-            .padding(10.dp, 0.dp, 10.dp, 10.dp)
-            .fillMaxWidth()
-        ,
+        modifier = modifier.padding(10.dp, 0.dp, 10.dp, 10.dp).fillMaxWidth(),
         selectedIndex = selectedIndex,
         barColor = appMainColor,
         ballColor = appMainColor,
@@ -44,29 +38,41 @@ fun NewCustomBottomBar(modifier: Modifier) {
         ballAnimation = Straight(tween(300)),
         indentAnimation = Height(tween(300))
     ) {
+        LaunchedEffect(key1 = selectedIndex) {
+
+        }
         if(selectedIndex == 0) {
             BottomNavbarButton({},R.drawable.ticket_filled, blackColor, playDescription)
         } else {
-            BottomNavbarButton({
-                AppNavigation.instance.appNavigation()[2]()
-                selectedIndex = 0
-            },R.drawable.ticket, blackColor, playDescription)
+            BottomNavbarButton(
+                {
+                    mainViewModel.setFIndex(0)
+                    AppNavigation.instance.appNavigation()[2]()
+                },
+                R.drawable.ticket, blackColor, playDescription
+            )
         }
         if(selectedIndex == 1) {
             BottomNavbarButton({},R.drawable.add_box_filled, blackColor, playDescription)
         } else {
-            BottomNavbarButton({
-                AppNavigation.instance.appNavigation()[3]()
-                selectedIndex = 1
-            },R.drawable.add_box, blackColor, playDescription)
+            BottomNavbarButton(
+                {
+                    mainViewModel.setFIndex(1)
+                    AppNavigation.instance.appNavigation()[3]()
+                },
+                R.drawable.add_box, blackColor, playDescription
+            )
         }
         if(selectedIndex == 2) {
             BottomNavbarButton({},R.drawable.profile_filled, blackColor, profileDescription)
         } else {
-            BottomNavbarButton({
-                AppNavigation.instance.appNavigation()[1]()
-                selectedIndex = 2
-            },R.drawable.profile, blackColor, profileDescription)
+            BottomNavbarButton(
+                {
+                    mainViewModel.setFIndex(2)
+                    AppNavigation.instance.appNavigation()[1]()
+                },
+                R.drawable.profile, blackColor, profileDescription
+            )
         }
     }
 }

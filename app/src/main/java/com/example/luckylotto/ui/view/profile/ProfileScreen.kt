@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -33,11 +35,11 @@ fun ProfileScreen(mainViewModel: MainViewModel) {
 
 @Composable
 fun TicketCardList(mainViewModel: MainViewModel) {
+    val tickets by mainViewModel.tickets.collectAsState()
     LazyColumn(modifier = Modifier
         .fillMaxSize()) {
-        items(20) {
-            TicketCard(mainViewModel,it)
-            if(it < 19) Spacer(modifier = Modifier.height(10.dp))
+        items(tickets.size) {
+            TicketCard(tickets[it], mainViewModel)
         }
     }
 }

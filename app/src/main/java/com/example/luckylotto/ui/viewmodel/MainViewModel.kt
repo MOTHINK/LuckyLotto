@@ -1,17 +1,32 @@
 package com.example.luckylotto.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
 import com.example.luckylotto.data.model.Pool
-import com.example.luckylotto.data.repository.PoolRepository
+import com.example.luckylotto.data.model.Ticket
+import com.example.luckylotto.data.repository.pool_repository.PoolRepository
+import com.example.luckylotto.data.repository.ticket_repository.TicketRepository
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 
-class MainViewModel(private val poolRepository: PoolRepository) : ViewModel() {
+class MainViewModel(private val poolRepository: PoolRepository,private val ticketRepository: TicketRepository) : ViewModel() {
+
+    private val _snackBarMessage: MutableStateFlow<String> = MutableStateFlow<String>("")
+    val snackBarMessage: StateFlow<String> = _snackBarMessage
+
+    private val _fIndex: MutableStateFlow<Int> = MutableStateFlow<Int>(2)
+    val fIndex: StateFlow<Int> = _fIndex
 
     val maxTicketValues = listOf(50, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000)
     val maxTimeValues = listOf(1,6,12,24,48,72,168,336,672)
@@ -48,10 +63,27 @@ class MainViewModel(private val poolRepository: PoolRepository) : ViewModel() {
     private val _poolSearchText: MutableStateFlow<String> = MutableStateFlow<String>("")
     val poolSearchText: StateFlow<String> = _poolSearchText
 
+    private val _tickets: MutableStateFlow<List<Ticket>> = MutableStateFlow<List<Ticket>>(emptyList())
+    val tickets: StateFlow<List<Ticket>> = _tickets
+
     init {
+        viewModelScope.launch {
+            FirebaseAuthentication.instance.initializeFirebaseAuth()
+        }
+        viewModelScope.launch {
+            getAllTicketsFromDatabase()
+        }
         viewModelScope.launch {
             getAllPoolsFromDatabase()
         }
+    }
+
+    fun setFIndex(index: Int) {
+        _fIndex.value = index
+    }
+
+    fun setSnackBarMessage(message: String) {
+        _snackBarMessage.value = message
     }
 
     fun setFirebaseUser(firebaseUser: FirebaseUser?) {
@@ -63,23 +95,70 @@ class MainViewModel(private val poolRepository: PoolRepository) : ViewModel() {
     }
     private suspend fun getAllPoolsFromDatabase() {
         poolRepository.getAllPoolsStream(System.currentTimeMillis()).collect { pools ->
+            pools.forEach { pool ->
+                Log.d("USER_POOLS", pool.toString())
+            }
             _pools.value = pools
         }
     }
 
-    suspend fun createNewPoolTest(maxTickets: Int, closeTime: Long, poolImage: String, isPrivate: Boolean): Boolean {
+    private suspend fun getAllTicketsFromDatabase() {
+        ticketRepository.getAllTickets(FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid).collect { tickets ->
+            tickets.forEach { ticket ->
+                Log.d("USER_TICKETS", ticket.toString())
+            }
+            _tickets.value = tickets
+        }
+    }
+
+    suspend fun createPoolAndGetTicket(maxTickets: Int, closeTime: Long, poolImage: String, isPrivate: Boolean): Boolean {
+        val pool: Pool = Pool(
+            poolId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.displayName.toString()+"-"+System.currentTimeMillis(),
+            userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.uid.toString(),
+            maxTickets = maxTickets,
+            closeTime = System.currentTimeMillis()+closeTime,
+            startTime = System.currentTimeMillis(),
+            poolImage = poolImage,
+            isPrivate = isPrivate
+        )
+        return createNewPool(pool) && createNewTicket(pool)
+    }
+
+    private suspend fun createNewPool(pool: Pool): Boolean {
         return try {
-            poolRepository.insertPool(
-                Pool(
-                    poolId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.displayName.toString()+"#"+System.currentTimeMillis(),
-                    userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.uid.toString(),
-                    maxTickets = maxTickets,
-                    closeTime = System.currentTimeMillis()+closeTime,
-                    startTime = System.currentTimeMillis(),
-                    poolImage = poolImage,
-                    isPrivate = isPrivate
+            poolRepository.insertPool(pool)
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private suspend fun createNewTicket(pool: Pool): Boolean {
+        return try {
+            ticketRepository.insertTicket(
+                Ticket(
+                    UUID.randomUUID().toString(),
+                    123456.toString(),
+                    pool.poolId,
+                    FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid,
+                    pool.startTime+(pool.closeTime-pool.startTime),
+                    pool.ticketsBought,
+                    pool.maxTickets,
+                    pool.poolImage,
+                    pool.isPrivate
                 )
             )
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    fun deleteTicketById(ticketId: String): Boolean {
+        return try {
+            viewModelScope.launch {
+                ticketRepository.deleteTicketById(ticketId)
+            }
             true
         } catch (_: Exception) {
             false
