@@ -16,7 +16,7 @@ class FirebaseAuthentication {
         val instance: FirebaseAuthentication by lazy { FirebaseAuthentication() }
     }
 
-    suspend fun initializeFirebaseAuth(): FirebaseAuth {
+    fun initializeFirebaseAuth(): FirebaseAuth {
         this.auth = Firebase.auth
         return this.auth
     }

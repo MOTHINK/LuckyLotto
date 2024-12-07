@@ -38,8 +38,8 @@ fun CreateNewPoolButton(mainViewModel: MainViewModel, maxTickets: Int, closeTime
                     }.await()
                 ) {
                     mainViewModel.setSnackBarMessage("Pool created successfully")
-                    mainViewModel.setNavBarIndex(0)
-                    AppNavigation.instance.appNavigation()[2]()
+                    mainViewModel.setNavBarIndex(2)
+                    AppNavigation.instance.appNavigation()[1]()
                 }
             }
         },

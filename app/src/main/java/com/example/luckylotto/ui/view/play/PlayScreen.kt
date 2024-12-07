@@ -39,7 +39,7 @@ fun PoolCardList(mainViewModel: MainViewModel) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         val filteredPools = pools.filter { it.poolId.startsWith(poolSearchText) && it.closeTime >= System.currentTimeMillis() && !it.isPrivate}.toList()
         items(filteredPools.size) {
-            PoolCard(filteredPools[it])
+            PoolCard(filteredPools[it], mainViewModel)
         }
     }
 }

@@ -1,14 +1,16 @@
 package com.example.luckylotto.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
 import com.example.luckylotto.data.model.Pool
 import com.example.luckylotto.data.model.Ticket
+import com.example.luckylotto.data.repository.pool_repository.OnlinePoolsRepository
 import com.example.luckylotto.data.repository.pool_repository.PoolRepository
 import com.example.luckylotto.data.repository.ticket_repository.TicketRepository
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -16,6 +18,8 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class MainViewModel(private val poolRepository: PoolRepository,private val ticketRepository: TicketRepository) : ViewModel() {
+
+    val firebaseDB = Firebase.firestore
 
     private val _snackBarMessage: MutableStateFlow<String> = MutableStateFlow<String>("")
     val snackBarMessage: StateFlow<String> = _snackBarMessage
@@ -66,9 +70,13 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
             FirebaseAuthentication.instance.initializeFirebaseAuth()
         }
         viewModelScope.launch {
+            setFirebaseUser(FirebaseAuthentication.instance.getFirebaseCurrentUser())
+        }
+        viewModelScope.launch {
             getAllTicketsFromDatabase()
         }
         viewModelScope.launch {
+            OnlinePoolsRepository.instance.getAllPoolsStream(firebaseDB,System.currentTimeMillis()) { _pools.value = it }
             getAllPoolsFromDatabase()
         }
     }
@@ -82,7 +90,10 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     }
 
     fun setFirebaseUser(firebaseUser: FirebaseUser?) {
-        _user.value = firebaseUser
+        if(user.value == null) {
+            _user.value = firebaseUser
+        }
+
     }
 
     fun setPoolSearchText(searchText: String) {
@@ -90,24 +101,22 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     }
     private suspend fun getAllPoolsFromDatabase() {
         poolRepository.getAllPoolsStream(System.currentTimeMillis()).collect { pools ->
-            pools.forEach { pool ->
-                Log.d("USER_POOLS", pool.toString())
-            }
             _pools.value = pools
         }
     }
 
+    suspend fun getAllPoolsFromFirebaseDatabase() {
+
+    }
+
     private suspend fun getAllTicketsFromDatabase() {
         ticketRepository.getAllTickets(FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid).collect { tickets ->
-            tickets.forEach { ticket ->
-                Log.d("USER_TICKETS", ticket.toString())
-            }
             _tickets.value = tickets
         }
     }
 
     suspend fun createPoolAndGetTicket(maxTickets: Int, closeTime: Long, poolImage: String, isPrivate: Boolean): Boolean {
-        val pool: Pool = Pool(
+        val pool = Pool(
             poolId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.displayName.toString()+"-"+System.currentTimeMillis(),
             userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.uid.toString(),
             maxTickets = maxTickets,

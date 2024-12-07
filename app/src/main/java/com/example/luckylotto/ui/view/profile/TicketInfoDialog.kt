@@ -6,19 +6,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
@@ -45,11 +40,14 @@ import com.example.luckylotto.ui.view.components.TicketsBought
 
 @Composable
 fun TicketInfoDialog(onDismissRequest: (Boolean) -> Unit, ticket: Ticket, updateTicket: (String) -> Unit, shareTicket: (String) -> Unit, deleteTicket: (String) -> Unit) {
-    var showUp by remember { mutableStateOf(false) }
+    var showUpConfirmDeleteTicketAlertDialog by remember { mutableStateOf(false) }
 
-    if(showUp) {
+    if(showUpConfirmDeleteTicketAlertDialog) {
         ConfirmDeleteTicketAlertDialog(
-            onDismissRequest = { showUp = it },
+            onDismissRequest = {
+                showUpConfirmDeleteTicketAlertDialog = it
+                onDismissRequest(false)
+            },
             onConfirmation = { deleteTicket(ticket.ticketId) },
             "Are you sure you want delete this ticket?"
         )
@@ -157,7 +155,7 @@ fun TicketInfoDialog(onDismissRequest: (Boolean) -> Unit, ticket: Ticket, update
                         }
                         IconButton(
                             onClick = {
-                                  showUp = true
+                                  showUpConfirmDeleteTicketAlertDialog = true
                             },
                             modifier = Modifier.size(60.dp),
                             colors = IconButtonDefaults.iconButtonColors(
@@ -167,49 +165,6 @@ fun TicketInfoDialog(onDismissRequest: (Boolean) -> Unit, ticket: Ticket, update
                             Icon(modifier = Modifier.size(35.dp), imageVector = ImageVector.vectorResource(
                                 R.drawable.trash), contentDescription = "delete", tint = Color.White)
                         }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ConfirmDeleteTicketAlertDialog(onDismissRequest: (Boolean) -> Unit, onConfirmation: () -> Unit, description: String) {
-    Dialog(onDismissRequest = { onDismissRequest(false) }) {
-        Card(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(10.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Icon(ImageVector.vectorResource(R.drawable.trash), contentDescription = "delete", modifier = Modifier.size(90.dp),tint = Color.Black)
-                Text(
-                    text = description,
-                    modifier = Modifier.fillMaxWidth().padding(16.dp).align(Alignment.CenterHorizontally),
-                    textAlign = TextAlign.Center
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    TextButton(
-                        onClick = { onDismissRequest(false) },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text("Cancel")
-                    }
-                    TextButton(
-                        onClick = {
-                            onDismissRequest(false)
-                            onConfirmation()
-                        },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text("Confirm")
                     }
                 }
             }

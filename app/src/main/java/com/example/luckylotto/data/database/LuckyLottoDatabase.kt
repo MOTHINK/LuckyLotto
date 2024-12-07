@@ -9,7 +9,7 @@ import com.example.luckylotto.data.dao.TicketDao
 import com.example.luckylotto.data.model.Pool
 import com.example.luckylotto.data.model.Ticket
 
-@Database(entities = [Pool::class, Ticket::class], version = 2, exportSchema = false)
+@Database(entities = [Pool::class, Ticket::class], version = 1, exportSchema = false)
 abstract class LuckyLottoDatabase : RoomDatabase() {
 
     abstract fun poolDao(): PoolDao

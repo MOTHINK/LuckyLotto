@@ -97,13 +97,15 @@ dependencies {
     //noinspection UseTomlInstead
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation(libs.play.services.auth)
-    // One Tap Client By Stevdza-san
-    implementation(libs.onetapcompose)
 
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
     implementation(libs.animated.navigation.bar)
+
+    // One Tap Client By Stevdza-san
+    implementation(libs.onetapcompose)
+
     // Coil
     implementation(libs.coil.compose)
     // ViewModel

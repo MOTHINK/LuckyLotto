@@ -33,11 +33,11 @@ import com.example.luckylotto.ui.viewmodel.MainViewModel
 
 @Composable
 fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel) {
-    var showUp by remember { mutableStateOf(false) }
+    var showUpTicketInfoDialog by remember { mutableStateOf(false) }
 
-    if(showUp) {
+    if(showUpTicketInfoDialog) {
         TicketInfoDialog(
-            onDismissRequest = { showUp = it },
+            onDismissRequest = { showUpTicketInfoDialog = it },
             ticket = ticket,
             updateTicket = {},
             shareTicket = {},
@@ -51,7 +51,7 @@ fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel) {
             .height(200.dp)
             .clip(RoundedCornerShape(10.dp))
             .clickable {
-                showUp = !showUp
+                showUpTicketInfoDialog = !showUpTicketInfoDialog
             }
     ) {
         AsyncImage(

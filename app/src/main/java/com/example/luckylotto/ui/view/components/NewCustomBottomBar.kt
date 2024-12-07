@@ -38,9 +38,6 @@ fun NewCustomBottomBar(mainViewModel: MainViewModel, modifier: Modifier) {
         ballAnimation = Straight(tween(300)),
         indentAnimation = Height(tween(300))
     ) {
-        LaunchedEffect(key1 = selectedIndex) {
-
-        }
         if(selectedIndex == 0) {
             BottomNavbarButton({},R.drawable.ticket_filled, blackColor, playDescription)
         } else {

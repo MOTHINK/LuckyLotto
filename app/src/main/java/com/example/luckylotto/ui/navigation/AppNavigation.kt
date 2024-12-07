@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
+import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
 import com.example.luckylotto.ui.view.login.LoginScreen
 import com.example.luckylotto.ui.view.play.PlayScreen
 import com.example.luckylotto.ui.view.profile.ProfileScreen
@@ -27,11 +28,11 @@ class AppNavigation private constructor() {
     @Composable
     fun InitializeNavigation(mainViewModel: MainViewModel) {
         navController = rememberNavController()
-        Log.d("RotatingPhoneNigga", "ITs rotating...")
+
         NavHost(
             this.setNavController(navController) as NavHostController,
             remember(navController) {
-                navController.createGraph(startDestination = NavigationItem.LOGIN.route) {
+                navController.createGraph(startDestination = startDestination()) {
                     composable(NavigationItem.LOGIN.route) { LoginScreen(mainViewModel) }
                     composable(NavigationItem.PROFILE.route) { ProfileScreen(mainViewModel) }
                     composable(NavigationItem.PLAY.route) { PlayScreen(mainViewModel) }
@@ -39,6 +40,14 @@ class AppNavigation private constructor() {
                 }
             }
         )
+    }
+
+    private fun startDestination(): String {
+        return if(FirebaseAuthentication.instance.getFirebaseCurrentUser() != null) {
+            NavigationItem.PROFILE.route
+        } else {
+            NavigationItem.LOGIN.route
+        }
     }
 
     private fun setNavController(navController: NavController): NavController {
