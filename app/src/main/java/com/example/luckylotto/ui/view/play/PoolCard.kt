@@ -38,7 +38,6 @@ fun PoolCard(pool: Pool, mainViewModel: MainViewModel) {
                 .padding(0.dp, 5.dp)
                 .clickable {
                     // Purchase Ticket here
-//                    FirestoreCloudDatabase.createPool(mainViewModel.firebaseDB,pool)
                 }
         ) {
             Box(

@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.Flow
 interface PoolDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(pool: Pool)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertPools(pools: List<Pool>)
     @Update
     suspend fun update(pool: Pool)
     @Delete

@@ -2,42 +2,56 @@ package com.example.luckylotto.data.repository.pool_repository
 
 import android.util.Log
 import com.example.luckylotto.data.model.Pool
+import com.example.luckylotto.data.model.Ticket
 import com.google.firebase.firestore.FirebaseFirestore
 
 class OnlinePoolsRepository() {
+    private val poolCollectionName = "pools"
+    private val ticketCollectionName = "tickets"
     companion object {
         val instance: OnlinePoolsRepository by lazy { OnlinePoolsRepository() }
     }
     fun getAllPoolsStream(firebaseDB: FirebaseFirestore, currentTime: Long, onSuccess: (List<Pool>) -> Unit) {
-        firebaseDB.collection("pools")
+        firebaseDB.collection(poolCollectionName)
             .whereGreaterThan("closeTime", currentTime)
             .get()
             .addOnSuccessListener { result ->
                 if(!result.isEmpty) onSuccess(result.toObjects(Pool::class.java))
             }
             .addOnFailureListener { exception ->
-                Log.w("Firestore", "Error getting documents.", exception)
+                Log.w("FIRESTORE_GET_ALL_POOLS", "Error getting documents.", exception)
             }
     }
 
     fun getPool(firebaseDB: FirebaseFirestore, id: Int, onSuccess: () -> Unit) {
-        firebaseDB.collection("pools").whereEqualTo("poolId",id).get()
+        firebaseDB.collection(poolCollectionName).whereEqualTo("poolId",id).get()
             .addOnSuccessListener { result ->
 //                if (!result.isEmpty) flow { result.toObjects(Pool::class.java).asFlow() }
             }
             .addOnFailureListener { e ->
-                Log.e("Firestore", "Error fetching user by name", e)
+                Log.e("FIRESTORE_GET_POOL", "Error fetching user by name", e)
             }
     }
 
-    fun insertPool(firebaseDB: FirebaseFirestore, pool: Pool, onSuccess: () -> Unit) {
-        firebaseDB.collection("pools")
+    fun insertPool(firebaseDB: FirebaseFirestore, pool: Pool) {
+        firebaseDB.collection(poolCollectionName)
             .add(pool)
             .addOnSuccessListener { documentReference ->
-                Log.d("XXX", "DocumentSnapshot added with ID: ${documentReference.id}")
+                Log.d("FIRESTORE_INSERT_POOL", "DocumentSnapshot added with ID: ${documentReference.id}")
             }
             .addOnFailureListener { e ->
-                Log.w("XXX", "Error adding document", e)
+                Log.w("FIRESTORE_INSERT_POOL", "Error adding document", e)
+            }
+    }
+
+    fun insertTicket(firebaseDB: FirebaseFirestore, ticket: Ticket) {
+        firebaseDB.collection(ticketCollectionName)
+            .add(ticket)
+            .addOnSuccessListener { documentReference ->
+                Log.d("FIRESTORE_INSERT_TICKET", "DocumentSnapshot added with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                Log.w("FIRESTORE_INSERT_TICKET", "Error adding document", e)
             }
     }
 

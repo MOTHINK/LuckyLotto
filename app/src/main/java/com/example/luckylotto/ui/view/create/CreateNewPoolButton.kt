@@ -34,7 +34,7 @@ fun CreateNewPoolButton(mainViewModel: MainViewModel, maxTickets: Int, closeTime
                 // We also need to check if we have enough coins to purchase a ticket.
                 if(
                     this.async {
-                        mainViewModel.createPoolAndGetTicket(maxTickets,closeTime,poolImage,isPrivate)
+                        mainViewModel.createPoolAndGetTicket(mainViewModel.firebaseDB,maxTickets,closeTime,poolImage,isPrivate)
                     }.await()
                 ) {
                     mainViewModel.setSnackBarMessage("Pool created successfully")

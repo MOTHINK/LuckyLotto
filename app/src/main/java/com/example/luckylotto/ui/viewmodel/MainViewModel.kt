@@ -9,6 +9,7 @@ import com.example.luckylotto.data.repository.pool_repository.OnlinePoolsReposit
 import com.example.luckylotto.data.repository.pool_repository.PoolRepository
 import com.example.luckylotto.data.repository.ticket_repository.TicketRepository
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -76,8 +77,7 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
             getAllTicketsFromDatabase()
         }
         viewModelScope.launch {
-            OnlinePoolsRepository.instance.getAllPoolsStream(firebaseDB,System.currentTimeMillis()) { _pools.value = it }
-            getAllPoolsFromDatabase()
+            getAllPoolsFromFirebaseDatabase(firebaseDB)
         }
     }
 
@@ -105,8 +105,11 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         }
     }
 
-    suspend fun getAllPoolsFromFirebaseDatabase() {
-
+    private suspend fun getAllPoolsFromFirebaseDatabase(firebaseDB: FirebaseFirestore) {
+        OnlinePoolsRepository.instance.getAllPoolsStream(firebaseDB,System.currentTimeMillis()) {
+            _pools.value = it
+        }
+        poolRepository.insertPools(pools.value)
     }
 
     private suspend fun getAllTicketsFromDatabase() {
@@ -115,7 +118,7 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         }
     }
 
-    suspend fun createPoolAndGetTicket(maxTickets: Int, closeTime: Long, poolImage: String, isPrivate: Boolean): Boolean {
+    suspend fun createPoolAndGetTicket(firebaseDB: FirebaseFirestore, maxTickets: Int, closeTime: Long, poolImage: String, isPrivate: Boolean): Boolean {
         val pool = Pool(
             poolId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.displayName.toString()+"-"+System.currentTimeMillis(),
             userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.uid.toString(),
@@ -125,33 +128,34 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
             poolImage = poolImage,
             isPrivate = isPrivate
         )
-        return createNewPool(pool) && createNewTicket(pool)
+        return createNewPool(pool, firebaseDB) && createNewTicket(firebaseDB,pool)
     }
 
-    private suspend fun createNewPool(pool: Pool): Boolean {
+    private suspend fun createNewPool(pool: Pool, firebaseDB: FirebaseFirestore): Boolean {
         return try {
             poolRepository.insertPool(pool)
+            OnlinePoolsRepository.instance.insertPool(firebaseDB,pool)
             true
         } catch (_: Exception) {
             false
         }
     }
 
-    private suspend fun createNewTicket(pool: Pool): Boolean {
+    private suspend fun createNewTicket(firebaseDB: FirebaseFirestore, pool: Pool): Boolean {
         return try {
-            ticketRepository.insertTicket(
-                Ticket(
-                    UUID.randomUUID().toString(),
-                    123456.toString(),
-                    pool.poolId,
-                    FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid,
-                    pool.startTime+(pool.closeTime-pool.startTime),
-                    pool.ticketsBought,
-                    pool.maxTickets,
-                    pool.poolImage,
-                    pool.isPrivate
-                )
+            val ticket = Ticket(
+                UUID.randomUUID().toString(),
+                123456.toString(),
+                pool.poolId,
+                FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid,
+                pool.startTime+(pool.closeTime-pool.startTime),
+                pool.ticketsBought,
+                pool.maxTickets,
+                pool.poolImage,
+                pool.isPrivate
             )
+            ticketRepository.insertTicket(ticket)
+            OnlinePoolsRepository.instance.insertTicket(firebaseDB,ticket)
             true
         } catch (_: Exception) {
             false
