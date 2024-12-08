@@ -8,6 +8,7 @@ import com.example.luckylotto.data.model.Ticket
 import com.example.luckylotto.data.repository.pool_repository.OnlinePoolsRepository
 import com.example.luckylotto.data.repository.pool_repository.PoolRepository
 import com.example.luckylotto.data.repository.ticket_repository.TicketRepository
+import com.example.luckylotto.utils.randomTicketNumbers
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -135,17 +136,18 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         return try {
             poolRepository.insertPool(pool)
             OnlinePoolsRepository.instance.insertPool(firebaseDB,pool)
+            _pools.value += pool
             true
         } catch (_: Exception) {
             false
         }
     }
 
-    private suspend fun createNewTicket(firebaseDB: FirebaseFirestore, pool: Pool): Boolean {
+    suspend fun createNewTicket(firebaseDB: FirebaseFirestore, pool: Pool): Boolean {
         return try {
             val ticket = Ticket(
                 UUID.randomUUID().toString(),
-                123456.toString(),
+                randomTicketNumbers(),
                 pool.poolId,
                 FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid,
                 pool.startTime+(pool.closeTime-pool.startTime),

@@ -52,7 +52,7 @@ fun TicketInfoDialog(onDismissRequest: (Boolean) -> Unit, ticket: Ticket, update
             "Are you sure you want delete this ticket?"
         )
     }
-    Dialog(onDismissRequest = {}) {
+    Dialog(onDismissRequest = { onDismissRequest(false) }) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()

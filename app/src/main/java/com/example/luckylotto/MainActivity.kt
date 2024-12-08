@@ -2,6 +2,7 @@ package com.example.luckylotto
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,7 @@ import com.example.luckylotto.ui.theme.LuckyLottoTheme
 import com.example.luckylotto.ui.view.components.NewCustomBottomBar
 import com.example.luckylotto.ui.view.create.CreatingPoolSnackBarMessage
 import com.example.luckylotto.ui.viewmodel.MainViewModel
+import com.example.luckylotto.utils.randomTicketNumbers
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope

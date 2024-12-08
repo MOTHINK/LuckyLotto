@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +49,7 @@ fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(0.dp, 5.dp)
             .height(200.dp)
             .clip(RoundedCornerShape(10.dp))
             .clickable {
