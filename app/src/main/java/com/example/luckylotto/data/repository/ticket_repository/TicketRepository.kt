@@ -8,5 +8,6 @@ interface TicketRepository {
     fun getAllTickets(userId: String): Flow<List<Ticket>>
     suspend fun deleteTicketById(ticketId: String)
     suspend fun insertTicket(ticket: Ticket)
+    suspend fun updateTicket(ticket: Ticket)
 
 }

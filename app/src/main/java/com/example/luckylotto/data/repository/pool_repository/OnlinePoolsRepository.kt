@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.luckylotto.data.model.Pool
 import com.example.luckylotto.data.model.Ticket
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 
 class OnlinePoolsRepository() {
     private val poolCollectionName = "pools"
@@ -23,10 +24,10 @@ class OnlinePoolsRepository() {
             }
     }
 
-    fun getPool(firebaseDB: FirebaseFirestore, id: Int, onSuccess: () -> Unit) {
-        firebaseDB.collection(poolCollectionName).whereEqualTo("poolId",id).get()
+    fun getPool(firebaseDB: FirebaseFirestore, poolId: String, onSuccess: (Pool) -> Unit) {
+        firebaseDB.collection(poolCollectionName).whereEqualTo("poolId",poolId).get()
             .addOnSuccessListener { result ->
-//                if (!result.isEmpty) flow { result.toObjects(Pool::class.java).asFlow() }
+                if (!result.isEmpty) onSuccess(result.toObjects(Pool::class.java)[0])
             }
             .addOnFailureListener { e ->
                 Log.e("FIRESTORE_GET_POOL", "Error fetching user by name", e)

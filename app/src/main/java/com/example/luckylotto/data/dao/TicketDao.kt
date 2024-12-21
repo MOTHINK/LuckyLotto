@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.luckylotto.data.model.Pool
 import com.example.luckylotto.data.model.Ticket
 import kotlinx.coroutines.flow.Flow
@@ -17,5 +18,7 @@ interface TicketDao {
     suspend fun deleteById(ticketId: String)
     @Query("SELECT * from tickets WHERE userId = :userId ORDER BY closeTime DESC;")
     fun getAllMyTickets(userId: String): Flow<List<Ticket>>
+    @Update
+    suspend fun updateTicket(ticket: Ticket)
 
 }

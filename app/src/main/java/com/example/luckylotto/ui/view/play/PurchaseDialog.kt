@@ -136,7 +136,7 @@ fun PurchaseDialog(mainViewModel:MainViewModel, pool: Pool, onDismissRequest: (B
                         horizontalArrangement = Arrangement.Center
                     )  {
                         Icon(imageVector = ImageVector.vectorResource(R.drawable.group), contentDescription = "Number of players", tint = Color.Black)
-                        TicketsBought(pool.ticketsBought.toString(),1000000.toString())
+                        TicketsBought(pool.ticketsBought.toString(),pool.maxTickets.toString())
                     }
                     // Forth Row
                     Spacer(modifier = Modifier.height(10.dp))

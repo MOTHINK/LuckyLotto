@@ -99,7 +99,6 @@ fun GoogleAuthenticationButton(mainViewModel: MainViewModel) {
                     AppNavigation.instance.appNavigation()[1],
                     mainViewModel
                 )
-                Log.d("CheckCheck", "Logging!!")
             }
         }
     }

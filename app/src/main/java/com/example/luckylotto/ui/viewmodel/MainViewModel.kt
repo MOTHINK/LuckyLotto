@@ -78,7 +78,7 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
             getAllTicketsFromDatabase()
         }
         viewModelScope.launch {
-            getAllPoolsFromFirebaseDatabase(firebaseDB)
+            getAllPoolsFromDatabase()
         }
     }
 
@@ -106,11 +106,17 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         }
     }
 
-    private suspend fun getAllPoolsFromFirebaseDatabase(firebaseDB: FirebaseFirestore) {
+    private fun insertAllPoolsIntoDatabase(pools: List<Pool>) {
+        viewModelScope.launch {
+            poolRepository.insertPools(pools)
+        }
+    }
+
+    fun getAllPoolsFromFirebaseDatabase(firebaseDB: FirebaseFirestore) {
         OnlinePoolsRepository.instance.getAllPoolsStream(firebaseDB,System.currentTimeMillis()) {
             _pools.value = it
+            insertAllPoolsIntoDatabase(it)
         }
-        poolRepository.insertPools(pools.value)
     }
 
     private suspend fun getAllTicketsFromDatabase() {
@@ -164,6 +170,12 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         }
     }
 
+    private fun updateTicketOnDatabase(updatedTicket: Ticket) {
+        viewModelScope.launch {
+            ticketRepository.updateTicket(updatedTicket)
+        }
+    }
+
     fun deleteTicketById(ticketId: String): Boolean {
         return try {
             viewModelScope.launch {
@@ -173,6 +185,44 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         } catch (_: Exception) {
             false
         }
+    }
+
+    private fun updatePoolById(poolId: String) {
+        OnlinePoolsRepository.instance.getPool(firebaseDB, poolId) {
+            _pools.value = _pools.value.toMutableList().map { pool ->
+                if (pool.poolId == it.poolId) it else pool
+            }
+            updateTicketById(poolId,it.ticketsBought)
+        }
+    }
+    private fun updateTicketById(poolId: String, ticketBought: Int) {
+        _tickets.value = _tickets.value.toMutableList().map { ticket ->
+            if(ticket.poolId == poolId) {
+                val updatedTicket = Ticket(
+                    ticketId = ticket.ticketId,
+                    ticketNumber = ticket.ticketNumber,
+                    poolId = ticket.poolId,
+                    userId = ticket.userId,
+                    closeTime = ticket.closeTime,
+                    ticketsBought = ticketBought,
+                    maxTickets = ticket.maxTickets,
+                    poolImage = ticket.poolImage,
+                    privatePool = ticket.privatePool
+                )
+                updateTicketOnDatabase(updatedTicket)
+                updatedTicket
+            } else {
+                ticket
+            }
+        }
+    }
+
+    fun updateTicketAndPoolByPoolId(poolId: String) {
+        updatePoolById(poolId)
+    }
+
+    fun shareTicket(ticketId: String) {
+
     }
 
 }

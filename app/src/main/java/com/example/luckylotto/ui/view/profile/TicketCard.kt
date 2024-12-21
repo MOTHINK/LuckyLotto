@@ -31,18 +31,24 @@ import com.example.luckylotto.ui.view.components.PoolCardId
 import com.example.luckylotto.ui.view.components.TicketNumbers
 import com.example.luckylotto.ui.view.components.TicketsBought
 import com.example.luckylotto.ui.viewmodel.MainViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
-fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel) {
+fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel, rememberCoroutineScope: CoroutineScope) {
     var showUpTicketInfoDialog by remember { mutableStateOf(false) }
 
     if(showUpTicketInfoDialog) {
         TicketInfoDialog(
             onDismissRequest = { showUpTicketInfoDialog = it },
             ticket = ticket,
-            updateTicket = {},
-            shareTicket = {},
-            deleteTicket = { mainViewModel.deleteTicketById(ticketId = it) }
+            updateTicket = {
+                rememberCoroutineScope.launch {
+                    mainViewModel.updateTicketAndPoolByPoolId(it)
+                }
+            },
+            shareTicket = { mainViewModel.shareTicket(it) },
+            deleteTicket = { mainViewModel.deleteTicketById(it) }
         )
     }
 

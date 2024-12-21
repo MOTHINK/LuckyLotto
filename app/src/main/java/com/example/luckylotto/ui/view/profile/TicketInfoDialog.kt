@@ -134,7 +134,7 @@ fun TicketInfoDialog(onDismissRequest: (Boolean) -> Unit, ticket: Ticket, update
                         horizontalArrangement = Arrangement.SpaceEvenly
                     )  {
                         IconButton(
-                            onClick = { updateTicket(ticket.ticketId) },
+                            onClick = { updateTicket(ticket.poolId) },
                             modifier = Modifier.size(60.dp),
                             colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = CustomBlue
