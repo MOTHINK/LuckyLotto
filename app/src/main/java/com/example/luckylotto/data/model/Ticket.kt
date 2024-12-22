@@ -13,6 +13,8 @@ data class Ticket(
     val closeTime: Long = 0L,
     val ticketsBought: Int = 0,
     val maxTickets: Int = 0,
+    val winningNumber: String = "000000",
     val poolImage: String = "",
-    val privatePool: Boolean = false
+    val privatePool: Boolean = false,
+    val prizeClaimed: Boolean = false,
 )

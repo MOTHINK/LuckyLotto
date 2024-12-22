@@ -8,7 +8,6 @@ import kotlinx.coroutines.tasks.await
 
 class OnlinePoolsRepository() {
     private val poolCollectionName = "pools"
-    private val ticketCollectionName = "tickets"
     companion object {
         val instance: OnlinePoolsRepository by lazy { OnlinePoolsRepository() }
     }
@@ -25,12 +24,13 @@ class OnlinePoolsRepository() {
     }
 
     fun getPool(firebaseDB: FirebaseFirestore, poolId: String, onSuccess: (Pool) -> Unit) {
-        firebaseDB.collection(poolCollectionName).whereEqualTo("poolId",poolId).get()
+        firebaseDB.collection(poolCollectionName).whereEqualTo("poolId",poolId)
+            .get()
             .addOnSuccessListener { result ->
                 if (!result.isEmpty) onSuccess(result.toObjects(Pool::class.java)[0])
             }
             .addOnFailureListener { e ->
-                Log.e("FIRESTORE_GET_POOL", "Error fetching user by name", e)
+                Log.e("FIRESTORE_GET_POOL", "Error fetching pool", e)
             }
     }
 
@@ -42,17 +42,6 @@ class OnlinePoolsRepository() {
             }
             .addOnFailureListener { e ->
                 Log.w("FIRESTORE_INSERT_POOL", "Error adding document", e)
-            }
-    }
-
-    fun insertTicket(firebaseDB: FirebaseFirestore, ticket: Ticket) {
-        firebaseDB.collection(ticketCollectionName)
-            .add(ticket)
-            .addOnSuccessListener { documentReference ->
-                Log.d("FIRESTORE_INSERT_TICKET", "DocumentSnapshot added with ID: ${documentReference.id}")
-            }
-            .addOnFailureListener { e ->
-                Log.w("FIRESTORE_INSERT_TICKET", "Error adding document", e)
             }
     }
 

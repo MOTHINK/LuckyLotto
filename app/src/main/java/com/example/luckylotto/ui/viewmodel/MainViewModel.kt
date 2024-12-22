@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
 import com.example.luckylotto.data.model.Pool
+import com.example.luckylotto.data.model.PrizeRequest
 import com.example.luckylotto.data.model.Ticket
 import com.example.luckylotto.data.repository.pool_repository.OnlinePoolsRepository
 import com.example.luckylotto.data.repository.pool_repository.PoolRepository
+import com.example.luckylotto.data.repository.prize_request_repository.OnlinePrizeRequestRepository
+import com.example.luckylotto.data.repository.ticket_repository.OnlineTicketRepository
 import com.example.luckylotto.data.repository.ticket_repository.TicketRepository
 import com.example.luckylotto.utils.randomTicketNumbers
 import com.google.firebase.auth.FirebaseUser
@@ -152,18 +155,18 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     suspend fun createNewTicket(firebaseDB: FirebaseFirestore, pool: Pool): Boolean {
         return try {
             val ticket = Ticket(
-                UUID.randomUUID().toString(),
-                randomTicketNumbers(),
-                pool.poolId,
-                FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid,
-                pool.startTime+(pool.closeTime-pool.startTime),
-                pool.ticketsBought,
-                pool.maxTickets,
-                pool.poolImage,
-                pool.isPrivate
+                ticketId = UUID.randomUUID().toString(),
+                ticketNumber = randomTicketNumbers(),
+                poolId = pool.poolId,
+                userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid,
+                closeTime = pool.startTime+(pool.closeTime-pool.startTime),
+                ticketsBought = pool.ticketsBought,
+                maxTickets = pool.maxTickets,
+                poolImage = pool.poolImage,
+                privatePool = pool.isPrivate
             )
             ticketRepository.insertTicket(ticket)
-            OnlinePoolsRepository.instance.insertTicket(firebaseDB,ticket)
+            OnlineTicketRepository.instance.insertTicket(firebaseDB,ticket)
             true
         } catch (_: Exception) {
             false
@@ -192,10 +195,10 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
             _pools.value = _pools.value.toMutableList().map { pool ->
                 if (pool.poolId == it.poolId) it else pool
             }
-            updateTicketById(poolId,it.ticketsBought)
+            updateTicketById(poolId,it.ticketsBought, it.winningNumber)
         }
     }
-    private fun updateTicketById(poolId: String, ticketBought: Int) {
+    private fun updateTicketById(poolId: String, ticketBought: Int, winningNumber: String) {
         _tickets.value = _tickets.value.toMutableList().map { ticket ->
             if(ticket.poolId == poolId) {
                 val updatedTicket = Ticket(
@@ -206,6 +209,7 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
                     closeTime = ticket.closeTime,
                     ticketsBought = ticketBought,
                     maxTickets = ticket.maxTickets,
+                    winningNumber = winningNumber,
                     poolImage = ticket.poolImage,
                     privatePool = ticket.privatePool
                 )
@@ -223,6 +227,15 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
 
     fun shareTicket(ticketId: String) {
 
+    }
+
+    fun prizeRequest(prizeRequest: PrizeRequest): Boolean {
+        return try {
+            OnlinePrizeRequestRepository.instance.prizeRequest(firebaseDB,prizeRequest)
+            true
+        } catch (_: Exception) {
+            false
+        }
     }
 
 }

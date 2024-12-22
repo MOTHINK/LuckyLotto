@@ -40,6 +40,7 @@ fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel, rememberCoroutineSc
 
     if(showUpTicketInfoDialog) {
         TicketInfoDialog(
+            mainViewModel,
             onDismissRequest = { showUpTicketInfoDialog = it },
             ticket = ticket,
             updateTicket = {
@@ -65,9 +66,7 @@ fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel, rememberCoroutineSc
         AsyncImage(
             model = ticket.poolImage,
             contentDescription = "Image from URL",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp),
+            modifier = Modifier.fillMaxWidth().height(200.dp),
             contentScale = ContentScale.Crop
         )
         Box(modifier = Modifier.fillMaxSize()) {
@@ -76,15 +75,7 @@ fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel, rememberCoroutineSc
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 PoolCardId(poolId = ticket.poolId)
-                TicketNumbers(
-                    ticket.ticketNumber,
-                    Modifier
-                        .size(50.dp)
-                        .background(
-                            Color.White,
-                            RoundedCornerShape(50.dp)
-                        )
-                )
+                TicketNumbers(Modifier.size(50.dp),ticket.ticketNumber, ticket.winningNumber)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -94,7 +85,7 @@ fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel, rememberCoroutineSc
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TicketsBought(ticket.ticketsBought.toString(),ticket.maxTickets.toString())
-                    CountDownDateTime(ticket.closeTime) // close time
+                    CountDownDateTime(ticket.closeTime)
                 }
             }
         }

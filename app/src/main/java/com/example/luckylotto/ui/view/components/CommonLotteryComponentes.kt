@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.luckylotto.R
+import com.example.luckylotto.ui.theme.AppGreen
 import com.example.luckylotto.ui.theme.CustomLightBlue
 import com.example.luckylotto.ui.theme.CustomRed
 import com.example.luckylotto.utils.CustomTimeFormatter
@@ -196,7 +197,7 @@ fun CountDownDateTime(millis: Long) {
 }
 
 @Composable
-fun TicketNumbers(num: String, modifier: Modifier) {
+fun TicketNumbers(modifier: Modifier, num: String, winningNumber: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -208,11 +209,41 @@ fun TicketNumbers(num: String, modifier: Modifier) {
             horizontalArrangement = Arrangement.Center
         ) {
             for(i in 0..5) {
-                Box(
-                    modifier = modifier,
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "${num[i]}", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                if(winningNumber == "000000") {
+                    Box(
+                        modifier = modifier
+                            .background(
+                                Color.White,
+                                RoundedCornerShape(50.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "${num[i]}", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    }
+                } else {
+                    if(num[i] == winningNumber[i]) {
+                        Box(
+                            modifier = modifier
+                                .background(
+                                    AppGreen,
+                                    RoundedCornerShape(50.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = "${num[i]}", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        }
+                    } else {
+                        Box(
+                            modifier = modifier
+                                .background(
+                                    CustomRed,
+                                    RoundedCornerShape(50.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = "${num[i]}", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        }
+                    }
                 }
                 Spacer(modifier = Modifier.width(3.dp))
             }
