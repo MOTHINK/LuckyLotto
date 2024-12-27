@@ -116,7 +116,7 @@ fun TopNavBarSearchPoolCard(mainViewModel: MainViewModel) {
                 IconButton(
                     onClick = {
                         mainViewModel.getAllPoolsFromFirebaseDatabase(mainViewModel.firebaseDB)
-                        mainViewModel.setSnackBarMessage("Refreshing lottery pool")
+                        mainViewModel.setSnackBarMessage(3)
                     },
                     modifier = Modifier.size(60.dp),
                     colors = IconButtonDefaults.iconButtonColors(

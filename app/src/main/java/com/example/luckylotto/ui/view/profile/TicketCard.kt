@@ -1,5 +1,6 @@
 package com.example.luckylotto.ui.view.profile
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -32,6 +32,7 @@ import com.example.luckylotto.ui.view.components.TicketNumbers
 import com.example.luckylotto.ui.view.components.TicketsBought
 import com.example.luckylotto.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 @Composable
@@ -39,18 +40,7 @@ fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel, rememberCoroutineSc
     var showUpTicketInfoDialog by remember { mutableStateOf(false) }
 
     if(showUpTicketInfoDialog) {
-        TicketInfoDialog(
-            mainViewModel,
-            onDismissRequest = { showUpTicketInfoDialog = it },
-            ticket = ticket,
-            updateTicket = {
-                rememberCoroutineScope.launch {
-                    mainViewModel.updateTicketAndPoolByPoolId(it)
-                }
-            },
-            shareTicket = { mainViewModel.shareTicket(it) },
-            deleteTicket = { mainViewModel.deleteTicketById(it) }
-        )
+        TicketInfoDialog(mainViewModel, onDismissRequest = { showUpTicketInfoDialog = it }, ticket = ticket)
     }
 
     Box(

@@ -1,6 +1,6 @@
 package com.example.luckylotto.ui.view.profile
 
-import androidx.compose.foundation.background
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -21,6 +23,7 @@ import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -37,11 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.example.luckylotto.R
-import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
-import com.example.luckylotto.data.model.PrizeRequest
 import com.example.luckylotto.data.model.Ticket
-import com.example.luckylotto.data.repository.ticket_repository.OnlineTicketRepository
-import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.theme.AppGreen
 import com.example.luckylotto.ui.theme.CustomBlue
 import com.example.luckylotto.ui.theme.CustomRed
@@ -50,11 +49,11 @@ import com.example.luckylotto.ui.view.components.PoolCardId
 import com.example.luckylotto.ui.view.components.TicketNumbers
 import com.example.luckylotto.ui.view.components.TicketsBought
 import com.example.luckylotto.ui.viewmodel.MainViewModel
-import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 @Composable
-fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -> Unit, ticket: Ticket, updateTicket: (String) -> Unit, shareTicket: (String) -> Unit, deleteTicket: (String) -> Unit) {
+fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -> Unit, ticket: Ticket) {
     var showUpConfirmDeleteTicketAlertDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -64,28 +63,36 @@ fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -
                 showUpConfirmDeleteTicketAlertDialog = it
                 onDismissRequest(false)
             },
-            onConfirmation = { deleteTicket(ticket.ticketId) },
+            onConfirmation = { mainViewModel.deleteTicketById(ticket.ticketId) },
             "Are you sure you want delete this ticket?"
         )
     }
     Dialog(onDismissRequest = { onDismissRequest(false) }) {
         Card(
-            modifier = Modifier.fillMaxWidth().padding(0.dp, 10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 10.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 AsyncImage(
                     model = ticket.poolImage,
                     contentDescription = "Image from URL",
-                    modifier = Modifier.fillMaxWidth().height(400.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(400.dp),
                     contentScale = ContentScale.Crop
                 )
                 Column(
-                    modifier = Modifier.fillMaxWidth().height(400.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(400.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(5.dp,0.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp, 0.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
@@ -108,7 +115,9 @@ fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -
                     }
                     TicketNumbers(Modifier.size(40.dp),ticket.ticketNumber, ticket.winningNumber)
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     )  {
@@ -116,7 +125,9 @@ fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -
                         TicketsBought(ticket.ticketsBought.toString(),ticket.maxTickets.toString())
                     }
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(10.dp, 0.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp, 0.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     )  {
@@ -125,77 +136,92 @@ fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(10.dp, 0.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp, 0.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly
                     )  {
                         IconButton(
-                            onClick = { updateTicket(ticket.poolId) },
+                            onClick = { coroutineScope.launch { mainViewModel.updateTicketAndPoolByPoolId(ticket.poolId) } },
                             modifier = Modifier.size(60.dp),
-                            colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = CustomBlue
-                            )
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = CustomBlue)
                         ) {
                             Icon(modifier = Modifier.size(35.dp), imageVector = ImageVector.vectorResource(
                                 R.drawable.synchronize), contentDescription = "Synchronize", tint = Color.White)
                         }
                         IconButton(
-                            onClick = { shareTicket(ticket.ticketId) },
+                            onClick = { mainViewModel.sharePool(ticket.poolId) },
                             modifier = Modifier.size(60.dp),
-                            colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = CustomBlue
-                            )
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = CustomBlue)
                         ) {
                             Icon(modifier = Modifier.size(35.dp), imageVector = ImageVector.vectorResource(
                                 R.drawable.share), contentDescription = "Share", tint = Color.White)
                         }
                         IconButton(
-                            onClick = {
-                                  showUpConfirmDeleteTicketAlertDialog = true
-                            },
+                            onClick = { showUpConfirmDeleteTicketAlertDialog = true },
                             modifier = Modifier.size(60.dp),
-                            colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = CustomRed
-                            )
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = CustomRed)
                         ) {
                             Icon(modifier = Modifier.size(35.dp), imageVector = ImageVector.vectorResource(
                                 R.drawable.trash), contentDescription = "delete", tint = Color.White)
                         }
                     }
                     if(ticket.ticketNumber == ticket.winningNumber) {
+                        Spacer(modifier = Modifier.height(10.dp))
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(10.dp, 10.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp, 10.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceEvenly
                         )  {
-                            Button(
-                                modifier = Modifier.padding(20.dp, 0.dp).fillMaxWidth().height(50.dp),
-                                onClick = {
-                                    coroutineScope.launch {
-                                        if(
-                                            this.async {
-                                                mainViewModel.prizeRequest(PrizeRequest(
-                                                    userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid,
-                                                    ticketId = ticket.ticketId,
-                                                    poolId = ticket.poolId
-                                                ))
-                                            }.await()
-                                        ) {
-                                            OnlineTicketRepository.instance.updateTicket(mainViewModel.firebaseDB,ticket)
+                            if(!ticket.prizeClaimed) {
+                                Log.d("PRIZE_00", "Prize is claimed")
+                                var isLoading by remember { mutableStateOf(false) }
+                                var delayTime by remember { mutableIntStateOf(0) }
+                                Button(
+                                    modifier = Modifier
+                                        .padding(20.dp, 0.dp)
+                                        .fillMaxWidth()
+                                        .height(50.dp),
+                                    onClick = {
+                                        isLoading = true
+                                        coroutineScope.launch {
+                                            isLoading = !mainViewModel.claimingPrize(ticket)
+                                            this.cancel()
+                                        }
+                                    },
+                                    shape = ShapeDefaults.Small,
+                                    colors = ButtonColors(AppGreen, AppGreen, AppGreen, AppGreen)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Text(
+                                            text = "claim your prize",
+                                            color = Color.White,
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Spacer(modifier = Modifier.width(10.dp))
+
+                                        if(isLoading) {
+                                            CircularProgressIndicator(modifier = Modifier.size(30.dp), strokeWidth = 3.dp, color = Color.White)
                                         }
                                     }
-                                },
-                                shape = ShapeDefaults.Small,
-                                colors = ButtonColors(AppGreen, AppGreen, AppGreen, AppGreen)
-                            ) {
-                                Row {
-                                    Text(
-                                        text = "claim your prize",
-                                        color = Color.White,
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
                                 }
+                            } else {
+                                Log.d("PRIZE_00", "Prize is not claimed")
+                                Icon(modifier = Modifier.size(35.dp), imageVector = ImageVector.vectorResource(
+                                    R.drawable.thumb_up), contentDescription = "thumb up", tint = Color.White)
+                                Text(
+                                    text = "Prize request is sent",
+                                    color = Color.White,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
                     }

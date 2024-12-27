@@ -16,6 +16,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -26,8 +28,8 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
 
     val firebaseDB = Firebase.firestore
 
-    private val _snackBarMessage: MutableStateFlow<String> = MutableStateFlow<String>("")
-    val snackBarMessage: StateFlow<String> = _snackBarMessage
+    private val _snackBarMessage: MutableStateFlow<Int> = MutableStateFlow<Int>(0)
+    val snackBarMessage: StateFlow<Int> = _snackBarMessage
 
     private val _navBarIndex: MutableStateFlow<Int> = MutableStateFlow<Int>(2)
     val navBarIndex: StateFlow<Int> = _navBarIndex
@@ -89,8 +91,8 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         _navBarIndex.value = index
     }
 
-    fun setSnackBarMessage(message: String) {
-        _snackBarMessage.value = message
+    fun setSnackBarMessage(n: Int) {
+        _snackBarMessage.value = n
     }
 
     fun setFirebaseUser(firebaseUser: FirebaseUser?) {
@@ -142,58 +144,77 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     }
 
     private suspend fun createNewPool(pool: Pool, firebaseDB: FirebaseFirestore): Boolean {
-        return try {
-            poolRepository.insertPool(pool)
-            OnlinePoolsRepository.instance.insertPool(firebaseDB,pool)
-            _pools.value += pool
-            true
-        } catch (_: Exception) {
-            false
+        var insertedOnlineDatabase = false
+        var insertedOnLocalDatabase = false
+
+        OnlinePoolsRepository.instance.insertPool(firebaseDB,pool) { insertedOnlineDatabase = it }
+
+        if(insertedOnlineDatabase) {
+            insertedOnLocalDatabase = try {
+                poolRepository.insertPool(pool)
+                _pools.value += pool
+                true
+            } catch (_: Exception) {
+                false
+            }
         }
+        return insertedOnLocalDatabase && insertedOnlineDatabase
     }
 
     suspend fun createNewTicket(firebaseDB: FirebaseFirestore, pool: Pool): Boolean {
-        return try {
-            val ticket = Ticket(
-                ticketId = UUID.randomUUID().toString(),
-                ticketNumber = randomTicketNumbers(),
-                poolId = pool.poolId,
-                userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid,
-                closeTime = pool.startTime+(pool.closeTime-pool.startTime),
-                ticketsBought = pool.ticketsBought,
-                maxTickets = pool.maxTickets,
-                poolImage = pool.poolImage,
-                privatePool = pool.isPrivate
-            )
-            ticketRepository.insertTicket(ticket)
-            OnlineTicketRepository.instance.insertTicket(firebaseDB,ticket)
-            true
-        } catch (_: Exception) {
-            false
-        }
+        val ticket = Ticket(
+            ticketId = UUID.randomUUID().toString(),
+            ticketNumber = randomTicketNumbers(),
+            poolId = pool.poolId,
+            userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid,
+            closeTime = pool.startTime+(pool.closeTime-pool.startTime),
+            ticketsBought = pool.ticketsBought,
+            maxTickets = pool.maxTickets,
+            poolImage = pool.poolImage,
+            privatePool = pool.isPrivate
+        )
+        ticketRepository.insertTicket(ticket)
+        return OnlineTicketRepository.instance.insertTicket(firebaseDB,ticket)
     }
 
-    private fun updateTicketOnDatabase(updatedTicket: Ticket) {
+    private fun updateTicketOnDatabase(ticket: Ticket) {
         viewModelScope.launch {
-            ticketRepository.updateTicket(updatedTicket)
+            ticketRepository.updateTicket(
+                Ticket(
+                    ticketId = ticket.ticketId,
+                    ticketNumber = ticket.ticketNumber,
+                    poolId = ticket.poolId,
+                    userId = ticket.userId,
+                    closeTime = ticket.closeTime,
+                    ticketsBought = ticket.ticketsBought,
+                    maxTickets = ticket.maxTickets,
+                    winningNumber = ticket.winningNumber,
+                    poolImage = ticket.poolImage,
+                    privatePool = ticket.privatePool,
+                    prizeClaimed = ticket.prizeClaimed
+                )
+            )
         }
     }
 
     fun deleteTicketById(ticketId: String): Boolean {
         return try {
-            viewModelScope.launch {
-                ticketRepository.deleteTicketById(ticketId)
-            }
+            viewModelScope.launch { ticketRepository.deleteTicketById(ticketId) }
             true
         } catch (_: Exception) {
             false
         }
     }
 
-    private fun updatePoolById(poolId: String) {
+    private suspend fun updatePoolById(poolId: String) {
         OnlinePoolsRepository.instance.getPool(firebaseDB, poolId) {
             _pools.value = _pools.value.toMutableList().map { pool ->
-                if (pool.poolId == it.poolId) it else pool
+                if (pool.poolId == it.poolId) {
+                    updatePoolOnDatabase(it)
+                    it
+                } else {
+                    pool
+                }
             }
             updateTicketById(poolId,it.ticketsBought, it.winningNumber)
         }
@@ -201,18 +222,7 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     private fun updateTicketById(poolId: String, ticketBought: Int, winningNumber: String) {
         _tickets.value = _tickets.value.toMutableList().map { ticket ->
             if(ticket.poolId == poolId) {
-                val updatedTicket = Ticket(
-                    ticketId = ticket.ticketId,
-                    ticketNumber = ticket.ticketNumber,
-                    poolId = ticket.poolId,
-                    userId = ticket.userId,
-                    closeTime = ticket.closeTime,
-                    ticketsBought = ticketBought,
-                    maxTickets = ticket.maxTickets,
-                    winningNumber = winningNumber,
-                    poolImage = ticket.poolImage,
-                    privatePool = ticket.privatePool
-                )
+                val updatedTicket = ticket.copy(ticketsBought = ticketBought, winningNumber = winningNumber)
                 updateTicketOnDatabase(updatedTicket)
                 updatedTicket
             } else {
@@ -221,19 +231,28 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         }
     }
 
-    fun updateTicketAndPoolByPoolId(poolId: String) {
+    private fun updatePoolOnDatabase(pool: Pool) {
+        viewModelScope.launch {
+            poolRepository.updatePool(pool)
+        }
+    }
+
+    suspend fun updateTicketAndPoolByPoolId(poolId: String) {
         updatePoolById(poolId)
     }
 
-    fun shareTicket(ticketId: String) {
+    fun sharePool(poolId: String) {
 
     }
 
-    fun prizeRequest(prizeRequest: PrizeRequest): Boolean {
-        return try {
-            OnlinePrizeRequestRepository.instance.prizeRequest(firebaseDB,prizeRequest)
+    suspend fun claimingPrize(ticket: Ticket): Boolean {
+        return if(
+            OnlinePrizeRequestRepository.instance.prizeRequest(firebaseDB, PrizeRequest(userId = ticket.userId, ticketId = ticket.ticketId, poolId = ticket.poolId)) &&
+            OnlineTicketRepository.instance.updateTicketPrizeClaim(firebaseDB,ticket)
+        ) {
+            updateTicketOnDatabase(ticket.copy(prizeClaimed = true))
             true
-        } catch (_: Exception) {
+        } else {
             false
         }
     }

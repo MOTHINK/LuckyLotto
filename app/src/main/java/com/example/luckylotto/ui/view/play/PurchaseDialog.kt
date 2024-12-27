@@ -50,14 +50,14 @@ import com.example.luckylotto.ui.view.components.CircularCountDownTimer
 import com.example.luckylotto.ui.view.components.PoolCardId
 import com.example.luckylotto.ui.view.components.TicketsBought
 import com.example.luckylotto.ui.viewmodel.MainViewModel
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun PurchaseDialog(mainViewModel:MainViewModel, pool: Pool, onDismissRequest: (Boolean) -> Unit) {
+fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: (String) -> Unit, createNewTicket: () -> Unit, sharePool: () -> Unit) {
     var enoughCoins by remember { mutableStateOf(true) }
-    val coroutineScope = rememberCoroutineScope()
 
     Dialog(onDismissRequest = { onDismissRequest(false) }) {
         Card(
@@ -148,7 +148,7 @@ fun PurchaseDialog(mainViewModel:MainViewModel, pool: Pool, onDismissRequest: (B
                         horizontalArrangement = Arrangement.SpaceEvenly
                     )  {
                         IconButton(
-                            onClick = {  },
+                            onClick = { updatePool(pool.poolId) },
                             modifier = Modifier.size(60.dp),
                             colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = CustomBlue
@@ -158,7 +158,7 @@ fun PurchaseDialog(mainViewModel:MainViewModel, pool: Pool, onDismissRequest: (B
                                 R.drawable.synchronize), contentDescription = "Synchronize", tint = Color.White)
                         }
                         IconButton(
-                            onClick = {  },
+                            onClick = { sharePool() },
                             modifier = Modifier.size(60.dp),
                             colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = CustomBlue
@@ -182,19 +182,7 @@ fun PurchaseDialog(mainViewModel:MainViewModel, pool: Pool, onDismissRequest: (B
                                 .fillMaxWidth()
                                 .height(50.dp),
                             onClick = {
-                                coroutineScope.launch {
-                                    if(
-                                        this.async {
-                                            mainViewModel.createNewTicket(mainViewModel.firebaseDB,pool)
-                                        }.await()
-                                    ) {
-                                        onDismissRequest(false)
-                                        mainViewModel.setSnackBarMessage("purchased ticket successfully")
-                                        mainViewModel.setNavBarIndex(2)
-                                        AppNavigation.instance.appNavigation()[1]()
-                                    }
-                                }
-
+                                createNewTicket()
 //                                enoughCoins = !enoughCoins
                             },
                             shape = ShapeDefaults.Small,

@@ -20,19 +20,41 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.luckylotto.data.model.Pool
+import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.view.components.CircularCountDownTimer
 import com.example.luckylotto.ui.view.components.PoolCardId
 import com.example.luckylotto.ui.view.components.PoolMaxPrize
 import com.example.luckylotto.ui.view.components.TicketsBought
 import com.example.luckylotto.ui.viewmodel.MainViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 @Composable
-fun PoolCard(pool: Pool, mainViewModel: MainViewModel) {
+fun PoolCard(pool: Pool, mainViewModel: MainViewModel, rememberCoroutineScope: CoroutineScope) {
+
     var showUp by remember { mutableStateOf(false) }
     var isVisible by remember { mutableStateOf(true) }
 
     if(showUp) {
-        PurchaseDialog(mainViewModel, pool) { showUp = it }
+        PurchaseDialog(
+            pool,
+            onDismissRequest = { showUp = it },
+            updatePool = { rememberCoroutineScope.launch { mainViewModel.updateTicketAndPoolByPoolId(it) } },
+            createNewTicket = {
+                rememberCoroutineScope.launch {
+                    if(this.async { mainViewModel.createNewTicket(mainViewModel.firebaseDB,pool) }.await()) {
+                        showUp = false
+                        mainViewModel.setNavBarIndex(2)
+                        AppNavigation.instance.appNavigation()[1]()
+                        mainViewModel.setSnackBarMessage(2)
+                    }
+                }
+            },
+            sharePool = {
+                mainViewModel.sharePool(pool.poolId)
+            }
+        )
     }
 
     if(isVisible) {
