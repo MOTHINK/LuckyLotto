@@ -45,7 +45,6 @@ fun PoolCard(pool: Pool, mainViewModel: MainViewModel, rememberCoroutineScope: C
                 rememberCoroutineScope.launch {
                     if(this.async { mainViewModel.createNewTicket(mainViewModel.firebaseDB,pool) }.await()) {
                         showUp = false
-                        mainViewModel.setNavBarIndex(2)
                         AppNavigation.instance.appNavigation()[1]()
                         mainViewModel.setSnackBarMessage(2)
                     }
@@ -66,15 +65,11 @@ fun PoolCard(pool: Pool, mainViewModel: MainViewModel, rememberCoroutineScope: C
                     showUp = true
                 }
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
+            Box(modifier = Modifier.fillMaxSize()) {
                 AsyncImage(
                     model = pool.poolImage,
                     contentDescription = "Image from URL",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(140.dp),
+                    modifier = Modifier.fillMaxWidth().height(140.dp),
                     contentScale = ContentScale.Crop
                 )
                 Box {
@@ -82,9 +77,7 @@ fun PoolCard(pool: Pool, mainViewModel: MainViewModel, rememberCoroutineScope: C
                         PoolCardId(poolId = pool.poolId)
                         PoolMaxPrize(pool.maxPrize.toString())
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
+                            modifier = Modifier.fillMaxWidth().height(50.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             TicketsBought(pool.ticketsBought.toString(),pool.maxTickets.toString())

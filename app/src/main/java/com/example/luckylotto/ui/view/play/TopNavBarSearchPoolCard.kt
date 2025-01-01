@@ -43,11 +43,7 @@ fun TopNavBarSearchPoolCard(mainViewModel: MainViewModel) {
     val text by mainViewModel.poolSearchText.collectAsState()
     val focusManager = LocalFocusManager.current
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
-    ) {
+    Column(modifier = Modifier.fillMaxWidth().height(60.dp)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -62,10 +58,7 @@ fun TopNavBarSearchPoolCard(mainViewModel: MainViewModel) {
                         shape = RoundedCornerShape(10.dp)
                     )
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
+                Row(modifier = Modifier.fillMaxWidth()) {
                     Box(
                         modifier = Modifier
                             .fillMaxHeight()
@@ -73,8 +66,7 @@ fun TopNavBarSearchPoolCard(mainViewModel: MainViewModel) {
                             .padding(5.dp, 5.dp)
                     ) {
                         OutlinedTextField(
-                            modifier = Modifier
-                                .fillMaxSize()
+                            modifier = Modifier.fillMaxSize()
                             ,
                             leadingIcon = {
                                 Icon(
@@ -84,14 +76,9 @@ fun TopNavBarSearchPoolCard(mainViewModel: MainViewModel) {
                                 )
                             },
                             value = text,
-                            onValueChange = {
-                                mainViewModel.setPoolSearchText(it)
-                            },
+                            onValueChange = { mainViewModel.setPoolSearchText(it) },
                             singleLine = true,
-                            textStyle = TextStyle(
-                                fontSize = 15.sp,
-                                textAlign = TextAlign.Start
-                            ),
+                            textStyle = TextStyle(fontSize = 15.sp, textAlign = TextAlign.Start),
                             placeholder = {
                                 Text(
                                     modifier = Modifier.fillMaxSize(),
@@ -100,28 +87,20 @@ fun TopNavBarSearchPoolCard(mainViewModel: MainViewModel) {
                                     fontSize = 15.sp
                                 )
                             },
-                            keyboardActions = KeyboardActions(
-                                onDone = { focusManager.clearFocus() }
-                            )
+                            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
                         )
                     }
                 }
             }
             Spacer(modifier = Modifier.width(5.dp))
-            Box(
-                modifier = Modifier
-                    .weight(0.15f)
-                    .height(60.dp)
-            ) {
+            Box(modifier = Modifier.weight(0.15f).height(60.dp)) {
                 IconButton(
                     onClick = {
                         mainViewModel.getAllPoolsFromFirebaseDatabase(mainViewModel.firebaseDB)
                         mainViewModel.setSnackBarMessage(3)
                     },
                     modifier = Modifier.size(60.dp),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = CustomBlue
-                    )
+                    colors = IconButtonDefaults.iconButtonColors(containerColor = CustomBlue)
                 ) {
                     Icon(modifier = Modifier.size(35.dp), imageVector = ImageVector.vectorResource(
                         R.drawable.synchronize), contentDescription = "Synchronize", tint = Color.White)

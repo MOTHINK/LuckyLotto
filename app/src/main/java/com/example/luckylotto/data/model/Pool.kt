@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class Pool(
     @PrimaryKey(autoGenerate = false)
     val poolId: String = "",
+    val firebaseDocumentReferenceId: String = "",
     val userId: String = "",
     val winningNumber: String = "000000",
     val maxPrize: Double = 0.0,

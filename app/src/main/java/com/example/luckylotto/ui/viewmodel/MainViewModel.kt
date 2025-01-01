@@ -1,5 +1,6 @@
 package com.example.luckylotto.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
@@ -16,8 +17,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -135,6 +134,7 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
             poolId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.displayName.toString()+"-"+System.currentTimeMillis(),
             userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.uid.toString(),
             maxTickets = maxTickets,
+            ticketsBought = 1,
             closeTime = System.currentTimeMillis()+closeTime,
             startTime = System.currentTimeMillis(),
             poolImage = poolImage,
@@ -144,24 +144,24 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     }
 
     private suspend fun createNewPool(pool: Pool, firebaseDB: FirebaseFirestore): Boolean {
-        var insertedOnlineDatabase = false
-        var insertedOnLocalDatabase = false
-
-        OnlinePoolsRepository.instance.insertPool(firebaseDB,pool) { insertedOnlineDatabase = it }
-
-        if(insertedOnlineDatabase) {
-            insertedOnLocalDatabase = try {
-                poolRepository.insertPool(pool)
+        var inserted = false
+        var poolFirebaseDocumentReferenceId = ""
+        if(OnlinePoolsRepository.instance.insertPool(firebaseDB,pool) { poolFirebaseDocumentReferenceId = it }) {
+            inserted = try {
+                poolRepository.insertPool(pool.copy(firebaseDocumentReferenceId = poolFirebaseDocumentReferenceId))
                 _pools.value += pool
                 true
             } catch (_: Exception) {
                 false
             }
         }
-        return insertedOnLocalDatabase && insertedOnlineDatabase
+        return inserted
     }
 
     suspend fun createNewTicket(firebaseDB: FirebaseFirestore, pool: Pool): Boolean {
+        var inserted = false
+        var ticketFirebaseDocumentReferenceId = ""
+
         val ticket = Ticket(
             ticketId = UUID.randomUUID().toString(),
             ticketNumber = randomTicketNumbers(),
@@ -173,8 +173,15 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
             poolImage = pool.poolImage,
             privatePool = pool.isPrivate
         )
-        ticketRepository.insertTicket(ticket)
-        return OnlineTicketRepository.instance.insertTicket(firebaseDB,ticket)
+        if(OnlineTicketRepository.instance.insertTicket(firebaseDB,ticket) { ticketFirebaseDocumentReferenceId = it }) {
+            inserted = try {
+                ticketRepository.insertTicket(ticket.copy(firebaseDocumentReferenceId = ticketFirebaseDocumentReferenceId))
+                true
+            } catch (_: Exception) {
+                false
+            }
+        }
+        return inserted
     }
 
     private fun updateTicketOnDatabase(ticket: Ticket) {
@@ -183,6 +190,7 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
                 Ticket(
                     ticketId = ticket.ticketId,
                     ticketNumber = ticket.ticketNumber,
+                    firebaseDocumentReferenceId = ticket.firebaseDocumentReferenceId,
                     poolId = ticket.poolId,
                     userId = ticket.userId,
                     closeTime = ticket.closeTime,
@@ -210,8 +218,8 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         OnlinePoolsRepository.instance.getPool(firebaseDB, poolId) {
             _pools.value = _pools.value.toMutableList().map { pool ->
                 if (pool.poolId == it.poolId) {
-                    updatePoolOnDatabase(it)
-                    it
+                    updatePoolOnDatabase(it.copy(firebaseDocumentReferenceId = pool.firebaseDocumentReferenceId))
+                    it.copy(firebaseDocumentReferenceId = pool.firebaseDocumentReferenceId)
                 } else {
                     pool
                 }
@@ -223,7 +231,9 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         _tickets.value = _tickets.value.toMutableList().map { ticket ->
             if(ticket.poolId == poolId) {
                 val updatedTicket = ticket.copy(ticketsBought = ticketBought, winningNumber = winningNumber)
+                Log.d("Checking12345", "not changed yet $updatedTicket")
                 updateTicketOnDatabase(updatedTicket)
+                Log.d("Checking12345", "Changed: $updatedTicket")
                 updatedTicket
             } else {
                 ticket

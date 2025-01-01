@@ -2,13 +2,16 @@ package com.example.luckylotto
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -35,7 +38,9 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var mainViewModel: MainViewModel
     private lateinit var container: AppContainer
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition", "StateFlowValueCalledInComposition")
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition", "StateFlowValueCalledInComposition",
+        "RestrictedApi"
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -75,22 +80,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         )
-    }
-
-    private fun createPoolsTesting() {
-        CoroutineScope(Dispatchers.IO).launch {
-            for (i in 11..20) {
-                container.poolRepository.insertPool(Pool("id$i",FirebaseAuthentication.instance.getFirebaseCurrentUser()?.uid.toString(),"",10.0*i,1000*i,50*i,System.currentTimeMillis(),System.currentTimeMillis()+(60000L*60),mainViewModel.imageList[i-10]))
-            }
-        }
-    }
-
-    private fun deletePoolsTesting() {
-        CoroutineScope(Dispatchers.IO).launch {
-            for(i in 11..20) {
-                container.poolRepository.deletePoolById("id$i")
-            }
-        }
     }
 
 }

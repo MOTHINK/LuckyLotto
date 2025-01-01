@@ -43,7 +43,6 @@ fun NewCustomBottomBar(mainViewModel: MainViewModel, modifier: Modifier) {
         } else {
             BottomNavbarButton(
                 {
-                    mainViewModel.setNavBarIndex(0)
                     AppNavigation.instance.appNavigation()[2]()
                 },
                 R.drawable.ticket, blackColor, playDescription
@@ -54,7 +53,6 @@ fun NewCustomBottomBar(mainViewModel: MainViewModel, modifier: Modifier) {
         } else {
             BottomNavbarButton(
                 {
-                    mainViewModel.setNavBarIndex(1)
                     AppNavigation.instance.appNavigation()[3]()
                 },
                 R.drawable.add_box, blackColor, playDescription
@@ -65,7 +63,6 @@ fun NewCustomBottomBar(mainViewModel: MainViewModel, modifier: Modifier) {
         } else {
             BottomNavbarButton(
                 {
-                    mainViewModel.setNavBarIndex(2)
                     AppNavigation.instance.appNavigation()[1]()
                 },
                 R.drawable.profile, blackColor, profileDescription

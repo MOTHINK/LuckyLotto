@@ -69,30 +69,22 @@ fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -
     }
     Dialog(onDismissRequest = { onDismissRequest(false) }) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(0.dp, 10.dp),
+            modifier = Modifier.fillMaxWidth().padding(0.dp, 10.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 AsyncImage(
                     model = ticket.poolImage,
                     contentDescription = "Image from URL",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(400.dp),
+                    modifier = Modifier.fillMaxWidth().height(400.dp),
                     contentScale = ContentScale.Crop
                 )
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(400.dp),
+                    modifier = Modifier.fillMaxWidth().height(400.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp, 0.dp),
+                        modifier = Modifier.fillMaxWidth().padding(5.dp, 0.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
@@ -115,9 +107,7 @@ fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -
                     }
                     TicketNumbers(Modifier.size(40.dp),ticket.ticketNumber, ticket.winningNumber)
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp),
+                        modifier = Modifier.fillMaxWidth().padding(10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     )  {
@@ -125,9 +115,7 @@ fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -
                         TicketsBought(ticket.ticketsBought.toString(),ticket.maxTickets.toString())
                     }
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp, 0.dp),
+                        modifier = Modifier.fillMaxWidth().padding(10.dp, 0.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     )  {
@@ -136,9 +124,7 @@ fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp, 0.dp),
+                        modifier = Modifier.fillMaxWidth().padding(10.dp, 0.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly
                     )  {
@@ -170,9 +156,7 @@ fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -
                     if(ticket.ticketNumber == ticket.winningNumber) {
                         Spacer(modifier = Modifier.height(10.dp))
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(10.dp, 10.dp),
+                            modifier = Modifier.fillMaxWidth().padding(10.dp, 10.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceEvenly
                         )  {
@@ -181,10 +165,7 @@ fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -
                                 var isLoading by remember { mutableStateOf(false) }
                                 var delayTime by remember { mutableIntStateOf(0) }
                                 Button(
-                                    modifier = Modifier
-                                        .padding(20.dp, 0.dp)
-                                        .fillMaxWidth()
-                                        .height(50.dp),
+                                    modifier = Modifier.padding(20.dp, 0.dp).fillMaxWidth().height(50.dp),
                                     onClick = {
                                         isLoading = true
                                         coroutineScope.launch {

@@ -15,14 +15,15 @@ class OnlineTicketRepository {
         val instance: OnlineTicketRepository by lazy { OnlineTicketRepository() }
     }
 
-    suspend fun insertTicket(firebaseDB: FirebaseFirestore, ticket: Ticket): Boolean {
+    suspend fun insertTicket(firebaseDB: FirebaseFirestore, ticket: Ticket, ticketFirebaseDocumentReferenceId: (String) -> Unit): Boolean {
         return try {
             firebaseDB.collection(ticketCollectionName)
                 .add(ticket)
-                .addOnSuccessListener { documentReference -> Log.d("FIRESTORE_INSERT_TICKET", "DocumentSnapshot added with ID: ${documentReference.id}")
+                .addOnSuccessListener { documentReference ->
+                    ticketFirebaseDocumentReferenceId(documentReference.id)
+                    Log.d("FIRESTORE_INSERT_TICKET", "DocumentSnapshot added with ID: ${documentReference.id}")
                 }
-                .addOnFailureListener { e -> Log.w("FIRESTORE_INSERT_TICKET", "Error adding document", e)
-                }
+                .addOnFailureListener { e -> Log.w("FIRESTORE_INSERT_TICKET", "Error adding document", e) }
                 .await()
             true
         } catch (_: Exception) {
@@ -31,34 +32,18 @@ class OnlineTicketRepository {
     }
 
     suspend fun updateTicketPrizeClaim(firebaseDB: FirebaseFirestore, ticket: Ticket): Boolean {
-        var documentId = ""
-        firebaseDB.collection(ticketCollectionName).whereEqualTo("ticketId", ticket.ticketId)
-            .get()
-            .addOnSuccessListener {
-                Log.d("FIRESTORE_GET_TICKET", "DocumentSnapshot successfully retrieved!")
-                if(!it.isEmpty) {
-                    documentId = it.documents[0].id
+        return try {
+            firebaseDB.collection(ticketCollectionName).document(ticket.firebaseDocumentReferenceId)
+                .update("prizeClaimed", true)
+                .addOnSuccessListener {
+                    Log.d("FIRESTORE_UPDATE_TICKET", "DocumentSnapshot successfully updated!")
                 }
-            }
-            .addOnFailureListener {
-                    e -> Log.w("FIRESTORE_GET_TICKET", "Error getting ticket", e)
-            }.await()
-
-        if(documentId.isNotEmpty()) {
-            return try {
-                firebaseDB.collection(ticketCollectionName).document(documentId)
-                    .update("prizeClaimed", true)
-                    .addOnSuccessListener {
-                        Log.d("FIRESTORE_UPDATE_TICKET", "DocumentSnapshot successfully updated!")
-                    }
-                    .addOnFailureListener { e -> Log.w("FIRESTORE_UPDATE_TICKET", "Error updating ticket", e)
-                    }.await()
-                true
-            } catch (_e: Exception) {
-                false
-            }
+                .addOnFailureListener { e -> Log.w("FIRESTORE_UPDATE_TICKET", "Error updating ticket", e)
+                }.await()
+            true
+        } catch (_: Exception) {
+            false
         }
-        return false
     }
 
 }

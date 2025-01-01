@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class Ticket(
     @PrimaryKey(autoGenerate = false)
     val ticketId: String = "",
+    val firebaseDocumentReferenceId: String = "",
     val ticketNumber: String = "",
     val poolId: String = "",
     val userId: String = "",

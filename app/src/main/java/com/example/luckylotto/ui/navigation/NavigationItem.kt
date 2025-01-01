@@ -5,9 +5,7 @@ enum class Routes(val route: String) {
     PROFILE("profile"),
     PLAY("play"),
     CREATE("create");
-    companion object {
-
-    }
+    companion object {}
 }
 
 sealed class NavigationItem(val route: String) {

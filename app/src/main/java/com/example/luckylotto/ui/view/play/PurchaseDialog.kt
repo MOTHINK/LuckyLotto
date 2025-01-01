@@ -61,18 +61,14 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
 
     Dialog(onDismissRequest = { onDismissRequest(false) }) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(400.dp)
-                .padding(0.dp, 10.dp),
+            modifier = Modifier.fillMaxWidth().height(400.dp).padding(0.dp, 10.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 AsyncImage(
                     model = pool.poolImage,
                     contentDescription = "Image from URL",
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
                 Column(
@@ -81,9 +77,7 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
                 ) {
                     // First Row
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp, 0.dp),
+                        modifier = Modifier.fillMaxWidth().padding(10.dp, 0.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
@@ -94,10 +88,7 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
                             IconButton(
                                 onClick = { onDismissRequest(false) },
                                 modifier = Modifier.size(30.dp),
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = CustomRed,
-                                    contentColor = Color.Red
-                                )
+                                colors = IconButtonDefaults.iconButtonColors(containerColor = CustomRed, contentColor = Color.Red)
                             ) {
                                 Icon(modifier = Modifier.size(20.dp), imageVector = ImageVector.vectorResource(
                                     R.drawable.close), contentDescription = "Close", tint = Color.White)
@@ -106,9 +97,7 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
                     }
                     // Second Row
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp, 0.dp),
+                        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -116,10 +105,7 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
                         Spacer(modifier = Modifier.width(5.dp))
                         Box {
                             Text(
-                                modifier = Modifier.background(
-                                    Color.White,
-                                    shape = RoundedCornerShape(5.dp)
-                                ),
+                                modifier = Modifier.background(Color.White, shape = RoundedCornerShape(5.dp)),
                                 text = "${pool.maxPrize}€",
                                 color = Color.Black,
                                 fontWeight = FontWeight.Bold,
@@ -129,9 +115,7 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
                     }
                     // Third row
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp, 0.dp),
+                        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     )  {
@@ -141,18 +125,14 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
                     // Forth Row
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp, 0.dp),
+                        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly
                     )  {
                         IconButton(
                             onClick = { updatePool(pool.poolId) },
                             modifier = Modifier.size(60.dp),
-                            colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = CustomBlue
-                            )
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = CustomBlue)
                         ) {
                             Icon(modifier = Modifier.size(35.dp), imageVector = ImageVector.vectorResource(
                                 R.drawable.synchronize), contentDescription = "Synchronize", tint = Color.White)
@@ -160,9 +140,7 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
                         IconButton(
                             onClick = { sharePool() },
                             modifier = Modifier.size(60.dp),
-                            colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = CustomBlue
-                            )
+                            colors = IconButtonDefaults.iconButtonColors(containerColor = CustomBlue)
                         ) {
                             Icon(modifier = Modifier.size(35.dp), imageVector = ImageVector.vectorResource(
                                 R.drawable.share), contentDescription = "Share", tint = Color.White)
@@ -171,16 +149,12 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
                     // Fifth Row
                     Spacer(modifier = Modifier.height(20.dp))
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp, 0.dp),
+                        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     )  {
                         Button(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
+                            modifier = Modifier.fillMaxWidth().height(50.dp),
                             onClick = {
                                 createNewTicket()
 //                                enoughCoins = !enoughCoins
@@ -200,8 +174,7 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Image(
-                                    modifier =  Modifier
-                                        .size(40.dp),
+                                    modifier =  Modifier.size(40.dp),
                                     painter = painterResource(id = R.drawable.coin),
                                     contentScale = ContentScale.Crop,
                                     contentDescription = "Coin image"
@@ -212,9 +185,7 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
                     // Sixth Row
                     Spacer(modifier = Modifier.height(20.dp))
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp, 0.dp),
+                        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     )  {
@@ -229,14 +200,7 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
                         enoughCoins = !enoughCoins
                     }
                     Box(
-                        modifier = Modifier
-                            .height(50.dp)
-                            .padding(5.dp)
-                            .background(
-                                color = CustomRed,
-                                shape = RoundedCornerShape(50.dp)
-                            )
-                            .align(Alignment.BottomCenter),
+                        modifier = Modifier.height(50.dp).fillMaxWidth().padding(20.dp,5.dp).background(color = CustomRed, shape = ShapeDefaults.Small).align(Alignment.BottomCenter),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(text = " " + "you need 3 coins!" + " ", color = Color.White)

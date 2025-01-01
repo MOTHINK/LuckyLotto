@@ -25,5 +25,7 @@ interface PoolDao {
     fun getAllPools(currentTime: Long): Flow<List<Pool>>
     @Query("DELETE from pools WHERE poolId = :id")
     fun deletePoolById(id: String)
+    @Query("UPDATE pools SET firebaseDocumentReferenceId = :documentReferenceId WHERE poolId = :poolId")
+    fun updatePoolFirebaseDocumentReferenceId(documentReferenceId: String, poolId: String)
 
 }

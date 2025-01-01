@@ -11,4 +11,5 @@ interface PoolRepository {
     suspend fun deletePool(pool: Pool)
     suspend fun deletePoolById(id: String)
     suspend fun updatePool(pool: Pool)
+    suspend fun updatePoolFirebaseDocumentReferenceId(documentReferenceId: String, poolId: String)
 }

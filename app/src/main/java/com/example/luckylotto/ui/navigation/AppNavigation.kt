@@ -1,13 +1,16 @@
 package com.example.luckylotto.ui.navigation
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
@@ -24,11 +27,12 @@ class AppNavigation private constructor() {
         val instance:AppNavigation by lazy { AppNavigation() }
     }
 
-    @SuppressLint("ComposableNaming")
+    @SuppressLint("ComposableNaming", "RestrictedApi")
     @Composable
     fun InitializeNavigation(mainViewModel: MainViewModel) {
         navController = rememberNavController()
-
+        val destination by this.navController.currentBackStackEntryAsState()
+        HandleNavBarSelection(mainViewModel,destination)
         NavHost(
             this.setNavController(navController) as NavHostController,
             remember(navController) {
@@ -43,11 +47,7 @@ class AppNavigation private constructor() {
     }
 
     private fun startDestination(): String {
-        return if(FirebaseAuthentication.instance.getFirebaseCurrentUser() != null) {
-            NavigationItem.PROFILE.route
-        } else {
-            NavigationItem.LOGIN.route
-        }
+        return if(FirebaseAuthentication.instance.getFirebaseCurrentUser() != null) NavigationItem.PROFILE.route else NavigationItem.LOGIN.route
     }
 
     private fun setNavController(navController: NavController): NavController {
@@ -55,11 +55,20 @@ class AppNavigation private constructor() {
         return this.navController
     }
 
+    @SuppressLint("RestrictedApi")
     fun appNavigation() = listOf(
-        {this.navController.navigate(NavigationItem.LOGIN.route)},
-        {this.navController.navigate(NavigationItem.PROFILE.route)},
-        {this.navController.navigate(NavigationItem.PLAY.route)},
-        {this.navController.navigate(NavigationItem.CREATE.route)}
+        { this.navController.navigate(NavigationItem.LOGIN.route) },
+        { this.navController.navigate(NavigationItem.PROFILE.route) },
+        { this.navController.navigate(NavigationItem.PLAY.route) },
+        { this.navController.navigate(NavigationItem.CREATE.route) }
     )
 
+    @Composable
+    private fun HandleNavBarSelection(mainViewModel: MainViewModel, destination: NavBackStackEntry?) {
+        LaunchedEffect(destination) {
+            if (destination?.destination?.route == NavigationItem.PLAY.route) { mainViewModel.setNavBarIndex(0) }
+            if (destination?.destination?.route == NavigationItem.CREATE.route) { mainViewModel.setNavBarIndex(1) }
+            if (destination?.destination?.route == NavigationItem.PROFILE.route) { mainViewModel.setNavBarIndex(2) }
+        }
+    }
 }
