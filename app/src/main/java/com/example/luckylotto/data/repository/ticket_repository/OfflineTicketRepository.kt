@@ -9,4 +9,5 @@ class OfflineTicketRepository(private val ticketDao: TicketDao) : TicketReposito
     override suspend fun deleteTicketById(ticketId: String) = ticketDao.deleteById(ticketId)
     override suspend fun insertTicket(ticket: Ticket) = ticketDao.insert(ticket)
     override suspend fun updateTicket(ticket: Ticket) = ticketDao.updateTicket(ticket)
+    override suspend fun updateBoughtTicketsById(poolId: String, ticketsBought: Int) = ticketDao.updateBoughtTicketsById(poolId,ticketsBought)
 }

@@ -12,5 +12,4 @@ class OfflinePoolsRepository(private val poolDao: PoolDao) : PoolRepository {
     override suspend fun deletePool(pool: Pool) = poolDao.delete(pool)
     override suspend fun deletePoolById(id: String) = poolDao.deletePoolById(id)
     override suspend fun updatePool(pool: Pool) = poolDao.update(pool)
-    override suspend fun updatePoolFirebaseDocumentReferenceId(documentReferenceId: String, poolId: String) = poolDao.updatePoolFirebaseDocumentReferenceId(documentReferenceId, poolId)
 }

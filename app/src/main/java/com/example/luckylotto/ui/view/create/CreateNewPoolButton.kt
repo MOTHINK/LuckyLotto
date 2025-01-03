@@ -27,8 +27,6 @@ import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.theme.CustomBlue
 import com.example.luckylotto.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.async
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable

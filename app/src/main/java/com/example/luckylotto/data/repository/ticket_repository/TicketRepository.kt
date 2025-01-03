@@ -9,5 +9,6 @@ interface TicketRepository {
     suspend fun deleteTicketById(ticketId: String)
     suspend fun insertTicket(ticket: Ticket)
     suspend fun updateTicket(ticket: Ticket)
+    suspend fun updateBoughtTicketsById(poolId: String, ticketsBought: Int)
 
 }

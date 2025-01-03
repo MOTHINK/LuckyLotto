@@ -15,14 +15,11 @@ class OnlineTicketRepository {
         val instance: OnlineTicketRepository by lazy { OnlineTicketRepository() }
     }
 
-    suspend fun insertTicket(firebaseDB: FirebaseFirestore, ticket: Ticket, ticketFirebaseDocumentReferenceId: (String) -> Unit): Boolean {
+    suspend fun insertTicket(firebaseDB: FirebaseFirestore, ticket: Ticket): Boolean {
         return try {
-            firebaseDB.collection(ticketCollectionName)
-                .add(ticket)
-                .addOnSuccessListener { documentReference ->
-                    ticketFirebaseDocumentReferenceId(documentReference.id)
-                    Log.d("FIRESTORE_INSERT_TICKET", "DocumentSnapshot added with ID: ${documentReference.id}")
-                }
+            firebaseDB.collection(ticketCollectionName).document(ticket.ticketId)
+                .set(ticket)
+                .addOnSuccessListener { documentReference -> Log.d("FIRESTORE_INSERT_TICKET", "DocumentSnapshot added with ID: $documentReference") }
                 .addOnFailureListener { e -> Log.w("FIRESTORE_INSERT_TICKET", "Error adding document", e) }
                 .await()
             true
@@ -33,7 +30,7 @@ class OnlineTicketRepository {
 
     suspend fun updateTicketPrizeClaim(firebaseDB: FirebaseFirestore, ticket: Ticket): Boolean {
         return try {
-            firebaseDB.collection(ticketCollectionName).document(ticket.firebaseDocumentReferenceId)
+            firebaseDB.collection(ticketCollectionName).document(ticket.ticketId)
                 .update("prizeClaimed", true)
                 .addOnSuccessListener {
                     Log.d("FIRESTORE_UPDATE_TICKET", "DocumentSnapshot successfully updated!")

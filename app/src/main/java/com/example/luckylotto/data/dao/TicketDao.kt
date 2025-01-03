@@ -20,5 +20,7 @@ interface TicketDao {
     fun getAllMyTickets(userId: String): Flow<List<Ticket>>
     @Update
     suspend fun updateTicket(ticket: Ticket)
+    @Query("UPDATE tickets SET ticketsBought = :ticketsBought WHERE poolId = :poolId")
+    suspend fun updateBoughtTicketsById(poolId: String, ticketsBought: Int)
 
 }

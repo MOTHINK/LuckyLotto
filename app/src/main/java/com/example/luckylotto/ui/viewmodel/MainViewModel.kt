@@ -134,21 +134,21 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
             poolId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.displayName.toString()+"-"+System.currentTimeMillis(),
             userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.uid.toString(),
             maxTickets = maxTickets,
-            ticketsBought = 1,
+            ticketsBought = 0,
             closeTime = System.currentTimeMillis()+closeTime,
             startTime = System.currentTimeMillis(),
             poolImage = poolImage,
             isPrivate = isPrivate
         )
-        return createNewPool(pool, firebaseDB) && createNewTicket(firebaseDB,pool)
+
+        return createNewPool(firebaseDB,pool) && createNewTicket(firebaseDB,pool)
     }
 
-    private suspend fun createNewPool(pool: Pool, firebaseDB: FirebaseFirestore): Boolean {
+    private suspend fun createNewPool(firebaseDB: FirebaseFirestore, pool: Pool): Boolean {
         var inserted = false
-        var poolFirebaseDocumentReferenceId = ""
-        if(OnlinePoolsRepository.instance.insertPool(firebaseDB,pool) { poolFirebaseDocumentReferenceId = it }) {
+        if(OnlinePoolsRepository.instance.insertPool(firebaseDB,pool)) {
             inserted = try {
-                poolRepository.insertPool(pool.copy(firebaseDocumentReferenceId = poolFirebaseDocumentReferenceId))
+                poolRepository.insertPool(pool)
                 _pools.value += pool
                 true
             } catch (_: Exception) {
@@ -160,7 +160,8 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
 
     suspend fun createNewTicket(firebaseDB: FirebaseFirestore, pool: Pool): Boolean {
         var inserted = false
-        var ticketFirebaseDocumentReferenceId = ""
+        var incrementedLocal = false
+        var incrementedOnline = false
 
         val ticket = Ticket(
             ticketId = UUID.randomUUID().toString(),
@@ -168,40 +169,37 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
             poolId = pool.poolId,
             userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid,
             closeTime = pool.startTime+(pool.closeTime-pool.startTime),
-            ticketsBought = pool.ticketsBought,
+            ticketsBought = pool.ticketsBought + 1,
             maxTickets = pool.maxTickets,
             poolImage = pool.poolImage,
             privatePool = pool.isPrivate
         )
-        if(OnlineTicketRepository.instance.insertTicket(firebaseDB,ticket) { ticketFirebaseDocumentReferenceId = it }) {
+
+        if(OnlineTicketRepository.instance.insertTicket(firebaseDB,ticket)) {
             inserted = try {
-                ticketRepository.insertTicket(ticket.copy(firebaseDocumentReferenceId = ticketFirebaseDocumentReferenceId))
+                ticketRepository.insertTicket(ticket)
+                true
+            } catch (_: Exception) {
+                false
+            }
+
+            incrementedOnline = OnlinePoolsRepository.instance.incrementBoughtTickets(firebaseDB,pool)
+
+            incrementedLocal = try {
+                poolRepository.updatePool(pool.copy(ticketsBought = pool.ticketsBought + 1))
+                ticketRepository.updateBoughtTicketsById(pool.poolId,pool.ticketsBought + 1)
                 true
             } catch (_: Exception) {
                 false
             }
         }
-        return inserted
+        Log.d("Checking1234", "inserted: $inserted - incrementedLocal: $incrementedLocal - incrementedOnline: $incrementedOnline")
+        return inserted && incrementedLocal && incrementedOnline
     }
 
     private fun updateTicketOnDatabase(ticket: Ticket) {
         viewModelScope.launch {
-            ticketRepository.updateTicket(
-                Ticket(
-                    ticketId = ticket.ticketId,
-                    ticketNumber = ticket.ticketNumber,
-                    firebaseDocumentReferenceId = ticket.firebaseDocumentReferenceId,
-                    poolId = ticket.poolId,
-                    userId = ticket.userId,
-                    closeTime = ticket.closeTime,
-                    ticketsBought = ticket.ticketsBought,
-                    maxTickets = ticket.maxTickets,
-                    winningNumber = ticket.winningNumber,
-                    poolImage = ticket.poolImage,
-                    privatePool = ticket.privatePool,
-                    prizeClaimed = ticket.prizeClaimed
-                )
-            )
+            ticketRepository.updateTicket(ticket)
         }
     }
 
@@ -218,8 +216,8 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         OnlinePoolsRepository.instance.getPool(firebaseDB, poolId) {
             _pools.value = _pools.value.toMutableList().map { pool ->
                 if (pool.poolId == it.poolId) {
-                    updatePoolOnDatabase(it.copy(firebaseDocumentReferenceId = pool.firebaseDocumentReferenceId))
-                    it.copy(firebaseDocumentReferenceId = pool.firebaseDocumentReferenceId)
+                    updatePoolOnDatabase(it)
+                    it
                 } else {
                     pool
                 }
@@ -231,9 +229,7 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         _tickets.value = _tickets.value.toMutableList().map { ticket ->
             if(ticket.poolId == poolId) {
                 val updatedTicket = ticket.copy(ticketsBought = ticketBought, winningNumber = winningNumber)
-                Log.d("Checking12345", "not changed yet $updatedTicket")
                 updateTicketOnDatabase(updatedTicket)
-                Log.d("Checking12345", "Changed: $updatedTicket")
                 updatedTicket
             } else {
                 ticket
@@ -242,9 +238,7 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     }
 
     private fun updatePoolOnDatabase(pool: Pool) {
-        viewModelScope.launch {
-            poolRepository.updatePool(pool)
-        }
+        viewModelScope.launch { poolRepository.updatePool(pool) }
     }
 
     suspend fun updateTicketAndPoolByPoolId(poolId: String) {
