@@ -51,58 +51,36 @@ fun ProfileCard(mainViewModel: MainViewModel, modifier: Modifier) {
             shape = RoundedCornerShape(15.dp)
         )
     ) {
-        Box(
-            modifier = modifier
-                .background(AppGreen)
-                .fillMaxWidth()
-                .padding(10.dp)
-        ) {
-            Column(
-                modifier = modifier
-                    .fillMaxWidth()
-            ) {
-                Column(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                ) {
+        Box(modifier = modifier.background(AppGreen).fillMaxWidth().padding(10.dp)) {
+            Column(modifier = modifier.fillMaxWidth()) {
+                Column(modifier = modifier.fillMaxWidth().height(100.dp)) {
                     Row(
-                        modifier
-                            .fillMaxWidth(),
+                        modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        Box(modifier = modifier
-                            .height(100.dp)
-                            .width(100.dp),
+                        Box(modifier = modifier.height(100.dp).width(100.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             CoinCounter()
                         }
                         Box(
-                            modifier = modifier
-                                .height(120.dp)
-                                .width(120.dp),
+                            modifier = modifier.height(120.dp).width(120.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             UserLogo()
                         }
-                        Box(modifier = modifier
-                            .height(100.dp)
-                            .width(100.dp),
+                        Box(
+                            modifier = modifier.height(100.dp).width(100.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            LogoutButton { FirebaseAuthentication.instance.signOutFirebaseAuthentication(mainViewModel,
-                                AppNavigation.instance.appNavigation()[0]) }
+                            LogoutButton {
+                                FirebaseAuthentication.instance.signOutFirebaseAuthentication(mainViewModel, AppNavigation.instance.appNavigation()[0])
+                            }
                         }
                     }
                 }
                 Spacer(modifier = modifier.height(10.dp))
-                Column(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .padding(15.dp, 0.dp)
-                ) {
+                Column(modifier = modifier.fillMaxWidth().height(50.dp).padding(15.dp, 0.dp)) {
                     PurchaseCoins {}
                 }
             }
@@ -137,8 +115,7 @@ private fun CoinCounter(numberOfCoins: String = "000") {
 @Composable
 private fun ImageIcon(size: Int,painter: Int,contentDescription: String) {
     Image(
-        modifier =  Modifier
-            .size(size.dp),
+        modifier =  Modifier.size(size.dp),
         painter = painterResource(id = painter),
         contentScale = ContentScale.Crop,
         contentDescription = contentDescription
@@ -149,9 +126,7 @@ private fun ImageIcon(size: Int,painter: Int,contentDescription: String) {
 private fun UserLogo() {
     AsyncImage(
         model = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.photoUrl.toString(),
-        modifier = Modifier
-            .size(100.dp)
-            .clip(CircleShape),
+        modifier = Modifier.size(100.dp).clip(CircleShape),
         contentDescription = "User image profile"
     )
 }
@@ -160,13 +135,11 @@ private fun UserLogo() {
 private fun LogoutButton(onClick: () -> Unit) {
     val size = 50
     IconButton(
-        modifier =  Modifier
-            .size(85.dp),
+        modifier =  Modifier.size(85.dp),
         onClick = { onClick() }
     ) {
         Box(
-            modifier = Modifier
-                .size(size.dp),
+            modifier = Modifier.size(size.dp),
             contentAlignment = Alignment.Center
         ) {
             ImageIcon(size,R.drawable.logout,"Logout")
@@ -178,30 +151,25 @@ private fun LogoutButton(onClick: () -> Unit) {
 private fun PurchaseCoins(onClick: () -> Unit) {
     val size = 50
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
+        modifier = Modifier.fillMaxWidth().height(50.dp),
         onClick = { onClick() },
         shape = RoundedCornerShape(15.dp),
         border = BorderStroke(1.dp, color = CustomDarkBlue),
         color = CustomBlue
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxHeight(),
+                modifier = Modifier.fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
                 ImageIcon(size,R.drawable.ads,"Ads")
             }
             Spacer(modifier = Modifier.width(20.dp))
             Box(
-                modifier = Modifier
-                    .fillMaxHeight(),
+                modifier = Modifier.fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -218,8 +186,7 @@ private fun PurchaseCoins(onClick: () -> Unit) {
 @Composable
 private fun MailCard(onClick: () -> Unit) {
     IconButton(
-        modifier =  Modifier
-            .size(85.dp),
+        modifier =  Modifier.size(85.dp),
         onClick = { onClick() }
     ) {
         MessageCounter()
@@ -230,22 +197,15 @@ private fun MailCard(onClick: () -> Unit) {
 private fun MessageCounter() {
     val size = 70
     Box(
-        modifier = Modifier
-            .size(size.dp),
+        modifier = Modifier.size(size.dp),
         contentAlignment = Alignment.Center
     ){
         ImageIcon(size,R.drawable.mail,"Message counter")
         Box(
-            modifier = Modifier
-                .offset(x = 20.dp, y = (-10).dp)
-                .clip(CircleShape)
-                .background(Color.Red)
+            modifier = Modifier.offset(x = 20.dp, y = (-10).dp).clip(CircleShape).background(Color.Red)
         ) {
             Text(
-                modifier = Modifier
-                    .size(30.dp)
-                    .align(Alignment.Center)
-                    .padding(0.dp, 3.dp),
+                modifier = Modifier.size(30.dp).align(Alignment.Center).padding(0.dp, 3.dp),
                 textAlign = TextAlign.Center,
                 text = "+9",
                 fontSize = 20.sp,
@@ -260,16 +220,14 @@ private fun WonCounter() {
     val size = 50
     Column {
         Box(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
             ImageIcon(size,R.drawable.win,"Coin counter")
         }
         Spacer(modifier = Modifier.height(10.dp))
         Box(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
             Text(

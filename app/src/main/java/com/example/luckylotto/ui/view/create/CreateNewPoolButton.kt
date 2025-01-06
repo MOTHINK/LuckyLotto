@@ -1,5 +1,6 @@
 package com.example.luckylotto.ui.view.create
 
+import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,15 +40,13 @@ fun CreateNewPoolButton(mainViewModel: MainViewModel, maxTickets: Int, closeTime
             coroutineScope.launch {
                 // We also need to check if we have enough coins to purchase a ticket.
                 isLoading = true
-
+                Log.d("Checking1234", "Clicking create new pool button")
                 if(this.async { mainViewModel.createPoolAndGetTicket(mainViewModel.firebaseDB,maxTickets,closeTime,poolImage,isPrivate) }.await()) {
                     mainViewModel.setSnackBarMessage(1)
                     AppNavigation.instance.appNavigation()[1]()
                     isLoading = false
                 }
-
             }
-
         },
         shape = ShapeDefaults.Small,
         colors = ButtonColors(CustomBlue, CustomBlue, CustomBlue, CustomBlue)

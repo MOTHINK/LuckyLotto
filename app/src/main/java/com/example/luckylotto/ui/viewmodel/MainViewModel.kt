@@ -7,11 +7,13 @@ import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
 import com.example.luckylotto.data.model.Pool
 import com.example.luckylotto.data.model.PrizeRequest
 import com.example.luckylotto.data.model.Ticket
+import com.example.luckylotto.data.model.Wallet
 import com.example.luckylotto.data.repository.pool_repository.OnlinePoolsRepository
 import com.example.luckylotto.data.repository.pool_repository.PoolRepository
 import com.example.luckylotto.data.repository.prize_request_repository.OnlinePrizeRequestRepository
 import com.example.luckylotto.data.repository.ticket_repository.OnlineTicketRepository
 import com.example.luckylotto.data.repository.ticket_repository.TicketRepository
+import com.example.luckylotto.data.repository.wallet_repository.WalletRepository
 import com.example.luckylotto.utils.randomTicketNumbers
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,7 +25,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class MainViewModel(private val poolRepository: PoolRepository,private val ticketRepository: TicketRepository) : ViewModel() {
+class MainViewModel(private val poolRepository: PoolRepository,private val ticketRepository: TicketRepository, private val walletRepository: WalletRepository) : ViewModel() {
 
     val firebaseDB = Firebase.firestore
 
@@ -71,19 +73,33 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     private val _tickets: MutableStateFlow<List<Ticket>> = MutableStateFlow<List<Ticket>>(emptyList())
     val tickets: StateFlow<List<Ticket>> = _tickets
 
+    private val _wallet: MutableStateFlow<Wallet?> = MutableStateFlow<Wallet?>(null)
+    val wallet: StateFlow<Wallet?> = _wallet
+
     init {
-        viewModelScope.launch {
-            FirebaseAuthentication.instance.initializeFirebaseAuth()
+        viewModelScope.launch { FirebaseAuthentication.instance.initializeFirebaseAuth() }
+        viewModelScope.launch { setFirebaseUser(FirebaseAuthentication.instance.getFirebaseCurrentUser()) }
+        if (user.value != null) {
+            viewModelScope.launch { getAllTicketsFromDatabase() }
+            viewModelScope.launch { getAllPoolsFromDatabase() }
+            viewModelScope.launch { getWallet() }
         }
-        viewModelScope.launch {
-            setFirebaseUser(FirebaseAuthentication.instance.getFirebaseCurrentUser())
+    }
+
+    private suspend fun getWallet() {
+        walletRepository.getWallet(FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid).collect {
+            _wallet.value = it
         }
+    }
+
+    fun createWallet(wallet: Wallet) {
         viewModelScope.launch {
-            getAllTicketsFromDatabase()
+            walletRepository.insert(wallet)
         }
-        viewModelScope.launch {
-            getAllPoolsFromDatabase()
-        }
+    }
+
+    suspend fun incrementCoin() {
+        walletRepository.updateWalletIncrementingCoinsById(FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid, wallet.value!!.coins)
     }
 
     fun setNavBarIndex(index: Int) {
@@ -130,6 +146,7 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     }
 
     suspend fun createPoolAndGetTicket(firebaseDB: FirebaseFirestore, maxTickets: Int, closeTime: Long, poolImage: String, isPrivate: Boolean): Boolean {
+        Log.d("Checking1234", "Executing createPoolAndGetTicket function")
         val pool = Pool(
             poolId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.displayName.toString()+"-"+System.currentTimeMillis(),
             userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.uid.toString(),
@@ -140,11 +157,11 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
             poolImage = poolImage,
             isPrivate = isPrivate
         )
-
         return createNewPool(firebaseDB,pool) && createNewTicket(firebaseDB,pool)
     }
 
     private suspend fun createNewPool(firebaseDB: FirebaseFirestore, pool: Pool): Boolean {
+        Log.d("Checking1234", "Executing createNewPool")
         var inserted = false
         if(OnlinePoolsRepository.instance.insertPool(firebaseDB,pool)) {
             inserted = try {
@@ -159,6 +176,7 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     }
 
     suspend fun createNewTicket(firebaseDB: FirebaseFirestore, pool: Pool): Boolean {
+        Log.d("Checking1234", "Executing createNewTicket")
         var inserted = false
         var incrementedLocal = false
         var incrementedOnline = false

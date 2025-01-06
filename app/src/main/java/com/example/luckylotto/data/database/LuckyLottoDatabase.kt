@@ -6,14 +6,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.luckylotto.data.dao.PoolDao
 import com.example.luckylotto.data.dao.TicketDao
+import com.example.luckylotto.data.dao.WalletDao
 import com.example.luckylotto.data.model.Pool
 import com.example.luckylotto.data.model.Ticket
+import com.example.luckylotto.data.model.Wallet
 
-@Database(entities = [Pool::class, Ticket::class], version = 2, exportSchema = false)
+@Database(entities = [Pool::class, Ticket::class, Wallet::class], version = 2, exportSchema = false)
 abstract class LuckyLottoDatabase : RoomDatabase() {
 
     abstract fun poolDao(): PoolDao
     abstract fun ticketDao(): TicketDao
+    abstract fun walletDao(): WalletDao
 
     companion object {
         @Volatile
