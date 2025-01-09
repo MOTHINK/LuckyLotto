@@ -1,5 +1,6 @@
 package com.example.luckylotto.ui.view.components
 
+import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -28,7 +28,7 @@ import com.exyte.animatednavbar.animation.indendshape.ShapeCornerRadius
 fun NewCustomBottomBar(mainViewModel: MainViewModel, modifier: Modifier) {
     val appMainColor = AppGreen
     val selectedIndex by mainViewModel.navBarIndex.collectAsState()
-
+    Log.d("checking12345","User is registred")
     AnimatedNavigationBar(
         modifier = modifier.padding(10.dp, 0.dp, 10.dp, 10.dp).fillMaxWidth(),
         selectedIndex = selectedIndex,

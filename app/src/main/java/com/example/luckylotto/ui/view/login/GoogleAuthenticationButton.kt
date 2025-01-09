@@ -1,5 +1,6 @@
 package com.example.luckylotto.ui.view.login
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -20,7 +21,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -35,13 +35,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.luckylotto.R
 import com.example.luckylotto.data.core.credential_manager.GoogleAuthenticationCredentialManager
+import com.example.luckylotto.data.model.Wallet
 import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.viewmodel.MainViewModel
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun GoogleAuthenticationButton(mainViewModel: MainViewModel) {
     var clicked by remember { mutableStateOf(false) }
-    var counter by remember { mutableIntStateOf(0) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -51,19 +52,8 @@ fun GoogleAuthenticationButton(mainViewModel: MainViewModel) {
         border = BorderStroke(1.dp, color = Color.LightGray),
         color = MaterialTheme.colorScheme.surface
     ) {
-        Row(modifier = Modifier
-            .padding(
-                start = 12.dp,
-                end = 16.dp,
-                top = 12.dp,
-                bottom = 12.dp
-            )
-            .animateContentSize(
-                animationSpec = tween(
-                    durationMillis = 100,
-                    easing = LinearOutSlowInEasing
-                )
-            ),
+        Row(
+            modifier = Modifier.padding(12.dp,16.dp,12.dp,12.dp).animateContentSize(animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -76,29 +66,28 @@ fun GoogleAuthenticationButton(mainViewModel: MainViewModel) {
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Sign In With Google",
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
 
-            if(clicked && counter<1) {
-                counter++
+            if(clicked) {
                 Spacer(modifier = Modifier.width(8.dp))
                 CircularProgressIndicator(
-                    modifier = Modifier
-                        .height(16.dp)
-                        .width(16.dp),
+                    modifier = Modifier.height(16.dp).width(16.dp),
                     strokeWidth = 2.dp,
                     color = MaterialTheme.colorScheme.primary
                 )
-
                 GoogleAuthenticationCredentialManager.instance.startGoogleAuthenticationFlow(
                     coroutineScope,
                     LocalContext.current,
-                    GoogleAuthenticationCredentialManager.instance.defaultSetFilterByAuthorizedAccounts,
-                    AppNavigation.instance.appNavigation()[1],
-                    mainViewModel
-                )
+                    GoogleAuthenticationCredentialManager.instance.defaultSetFilterByAuthorizedAccounts
+                ) {
+                    mainViewModel.setFirebaseUser(it.result.user)
+                    mainViewModel.getAllRequiredData()
+                    mainViewModel.createWallet(Wallet(it.result.user!!.uid))
+                    AppNavigation.instance.appNavigation()[1]()
+                }
             }
         }
     }

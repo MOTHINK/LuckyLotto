@@ -79,6 +79,10 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     init {
         viewModelScope.launch { FirebaseAuthentication.instance.initializeFirebaseAuth() }
         viewModelScope.launch { setFirebaseUser(FirebaseAuthentication.instance.getFirebaseCurrentUser()) }
+        getAllRequiredData()
+    }
+
+    fun getAllRequiredData() {
         if (user.value != null) {
             viewModelScope.launch { getAllTicketsFromDatabase() }
             viewModelScope.launch { getAllPoolsFromDatabase() }
@@ -111,10 +115,7 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     }
 
     fun setFirebaseUser(firebaseUser: FirebaseUser?) {
-        if(user.value == null) {
-            _user.value = firebaseUser
-        }
-
+        _user.value = firebaseUser
     }
 
     fun setPoolSearchText(searchText: String) {

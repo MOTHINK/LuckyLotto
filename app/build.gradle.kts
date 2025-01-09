@@ -117,4 +117,7 @@ dependencies {
     annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
 
+    // Google Admob
+    implementation(libs.play.services.ads)
+
 }

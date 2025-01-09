@@ -21,12 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 @Composable
 fun ProfileScreen(mainViewModel: MainViewModel) {
     val rememberCoroutineScope = rememberCoroutineScope()
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(10.dp)
-    ) {
+    Box(modifier = Modifier.fillMaxSize().padding(10.dp)) {
         Column(modifier = Modifier
             .fillMaxSize()) {
             ProfileCard(mainViewModel,Modifier)
@@ -39,8 +34,7 @@ fun ProfileScreen(mainViewModel: MainViewModel) {
 @Composable
 fun TicketCardList(mainViewModel: MainViewModel, rememberCoroutineScope: CoroutineScope) {
     val tickets by mainViewModel.tickets.collectAsState()
-    LazyColumn(modifier = Modifier
-        .fillMaxSize()) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(tickets.size) {
             TicketCard(tickets[it], mainViewModel, rememberCoroutineScope)
         }

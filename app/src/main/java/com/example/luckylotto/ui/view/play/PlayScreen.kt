@@ -22,7 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 fun PlayScreen(mainViewModel: MainViewModel) {
     val rememberCoroutineScope = rememberCoroutineScope()
     Box(
-        modifier = Modifier.fillMaxSize().background(Color.White).padding(10.dp)
+        modifier = Modifier.fillMaxSize().padding(10.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column {

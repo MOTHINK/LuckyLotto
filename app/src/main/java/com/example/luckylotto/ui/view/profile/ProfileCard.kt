@@ -21,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,22 +36,17 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.luckylotto.R
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
+import com.example.luckylotto.data.model.Wallet
 import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.theme.AppGreen
 import com.example.luckylotto.ui.theme.CustomBlue
 import com.example.luckylotto.ui.theme.CustomDarkBlue
 import com.example.luckylotto.ui.viewmodel.MainViewModel
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun ProfileCard(mainViewModel: MainViewModel, modifier: Modifier) {
-    Surface(
-        modifier = modifier.shadow(
-            elevation = 20.dp,
-            spotColor = Color.Black,
-            ambientColor = Color.Black,
-            shape = RoundedCornerShape(15.dp)
-        )
-    ) {
+    Surface(modifier = modifier.shadow(elevation = 20.dp, spotColor = Color.Black, ambientColor = Color.Black, shape = RoundedCornerShape(15.dp))) {
         Box(modifier = modifier.background(AppGreen).fillMaxWidth().padding(10.dp)) {
             Column(modifier = modifier.fillMaxWidth()) {
                 Column(modifier = modifier.fillMaxWidth().height(100.dp)) {
@@ -58,10 +54,11 @@ fun ProfileCard(mainViewModel: MainViewModel, modifier: Modifier) {
                         modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        Box(modifier = modifier.height(100.dp).width(100.dp),
+                        Box(
+                            modifier = modifier.height(100.dp).width(100.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            CoinCounter()
+                            CoinCounter(mainViewModel.wallet)
                         }
                         Box(
                             modifier = modifier.height(120.dp).width(120.dp),
@@ -73,9 +70,7 @@ fun ProfileCard(mainViewModel: MainViewModel, modifier: Modifier) {
                             modifier = modifier.height(100.dp).width(100.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            LogoutButton {
-                                FirebaseAuthentication.instance.signOutFirebaseAuthentication(mainViewModel, AppNavigation.instance.appNavigation()[0])
-                            }
+                            LogoutButton { FirebaseAuthentication.instance.signOutFirebaseAuthentication(mainViewModel, AppNavigation.instance.appNavigation()[0]) }
                         }
                     }
                 }
@@ -89,13 +84,11 @@ fun ProfileCard(mainViewModel: MainViewModel, modifier: Modifier) {
 }
 
 @Composable
-private fun CoinCounter(numberOfCoins: String = "000") {
-    val size = 50
+private fun CoinCounter(coins: StateFlow<Wallet?>) {
+    val amount = coins.collectAsState().value?.coins
     Row {
-        Box(
-            contentAlignment = Alignment.Center
-        ) {
-            ImageIcon(size, R.drawable.coin,"Coin counter")
+        Box(contentAlignment = Alignment.Center) {
+            ImageIcon(50, R.drawable.coin,"Coin counter")
         }
         Spacer(modifier = Modifier.width(5.dp))
         Box(
@@ -103,7 +96,7 @@ private fun CoinCounter(numberOfCoins: String = "000") {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = numberOfCoins,
+                text = amount.toString(),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 25.sp
@@ -186,7 +179,7 @@ private fun PurchaseCoins(onClick: () -> Unit) {
 @Composable
 private fun MailCard(onClick: () -> Unit) {
     IconButton(
-        modifier =  Modifier.size(85.dp),
+        modifier = Modifier.size(85.dp),
         onClick = { onClick() }
     ) {
         MessageCounter()
@@ -201,9 +194,7 @@ private fun MessageCounter() {
         contentAlignment = Alignment.Center
     ){
         ImageIcon(size,R.drawable.mail,"Message counter")
-        Box(
-            modifier = Modifier.offset(x = 20.dp, y = (-10).dp).clip(CircleShape).background(Color.Red)
-        ) {
+        Box(modifier = Modifier.offset(x = 20.dp, y = (-10).dp).clip(CircleShape).background(Color.Red)) {
             Text(
                 modifier = Modifier.size(30.dp).align(Alignment.Center).padding(0.dp, 3.dp),
                 textAlign = TextAlign.Center,

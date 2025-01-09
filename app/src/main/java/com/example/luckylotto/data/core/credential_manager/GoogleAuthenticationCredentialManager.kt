@@ -14,12 +14,15 @@ import androidx.credentials.PublicKeyCredential
 import androidx.credentials.exceptions.NoCredentialException
 import com.example.luckylotto.R
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
+import com.example.luckylotto.data.model.Wallet
 import com.example.luckylotto.ui.util.generateNonce
 import com.example.luckylotto.ui.viewmodel.MainViewModel
+import com.google.android.gms.tasks.Task
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -56,22 +59,39 @@ class GoogleAuthenticationCredentialManager private constructor() {
             .build()
     }
 
-    fun startGoogleAuthenticationFlow(
-        coroutineScope: CoroutineScope,
-        context: Context,
-        setFilterByAuthorizedAccounts: Boolean,
-        navigatingTo: () -> Unit,
-        mainViewModel: MainViewModel
-    ) {
+//    fun startGoogleAuthenticationFlow(coroutineScope: CoroutineScope, context: Context, setFilterByAuthorizedAccounts: Boolean, navigatingTo: () -> Unit, mainViewModel: MainViewModel) {
+//        coroutineScope.launch {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+//                try {
+////                    getGoogleCredentials(context,setFilterByAuthorizedAccounts,navigatingTo,mainViewModel)
+//                    getGoogleCredentials(context,setFilterByAuthorizedAccounts,navigatingTo,mainViewModel)
+//                } catch (e: GetCredentialException) {
+//                    handleFailure(e)
+//                } catch (e: NoCredentialException) {
+//                    try {
+////                        getGoogleSignInCredentials(context,navigatingTo,mainViewModel)
+//                        getGoogleSignInCredentials(context,navigatingTo,mainViewModel)
+//                    } catch (e: GetCredentialException) {
+//                        handleFailure(e)
+//                    } catch (e: NoCredentialException) {
+//                        handleFailure(e)
+//                    }
+//                    handleFailure(e)
+//                }
+//            }
+//        }
+//    }
+
+    fun startGoogleAuthenticationFlow(coroutineScope: CoroutineScope, context: Context, setFilterByAuthorizedAccounts: Boolean, successAuthenticating: (Task<AuthResult>) -> Unit) {
         coroutineScope.launch {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 try {
-                    getGoogleCredentials(context,setFilterByAuthorizedAccounts,navigatingTo,mainViewModel)
+                    getGoogleCredentials(context,setFilterByAuthorizedAccounts) { successAuthenticating(it) }
                 } catch (e: GetCredentialException) {
                     handleFailure(e)
                 } catch (e: NoCredentialException) {
                     try {
-                        getGoogleSignInCredentials(context,navigatingTo,mainViewModel)
+                        getGoogleSignInCredentials(context) { successAuthenticating(it) }
                     } catch (e: GetCredentialException) {
                         handleFailure(e)
                     } catch (e: NoCredentialException) {
@@ -83,29 +103,42 @@ class GoogleAuthenticationCredentialManager private constructor() {
         }
     }
 
-    private suspend fun getGoogleCredentials(
-        context: Context,
-        setFilterByAuthorizedAccounts: Boolean,
-        navigatingTo: () -> Unit,
-        mainViewModel: MainViewModel
-    ) {
-        val result = CredentialManager.create(context).getCredential(
-            request = getGoogleCredentialRequest(googleAccessRequest(context,setFilterByAuthorizedAccounts)),
-            context = context,
-        )
-        handleSignIn(result, navigatingTo, mainViewModel)
+//    private suspend fun getGoogleCredentials(context: Context, setFilterByAuthorizedAccounts: Boolean, navigatingTo: () -> Unit, mainViewModel: MainViewModel) {
+//        val result = CredentialManager.create(context).getCredential(
+//            request = getGoogleCredentialRequest(googleAccessRequest(context,setFilterByAuthorizedAccounts)),
+//            context = context,
+//        )
+////        handleSignIn(result, navigatingTo, mainViewModel)
+//        handleSignIn(result) {
+//            mainViewModel.setFirebaseUser(it.result.user)
+//            mainViewModel.getAllRequiredData()
+//            mainViewModel.createWallet(Wallet(it.result.user!!.uid))
+//            navigatingTo()
+//        }
+//    }
+//
+//    private suspend fun getGoogleSignInCredentials(context: Context, navigatingTo: () -> Unit, mainViewModel: MainViewModel) {
+//        val result = CredentialManager.create(context).getCredential(
+//            request = getGoogleSignInCredentialRequest(googleSignInAccessRequest(context)),
+//            context = context,
+//        )
+////        handleSignIn(result, navigatingTo,mainViewModel)
+//        handleSignIn(result) {
+//            mainViewModel.setFirebaseUser(it.result.user)
+//            mainViewModel.getAllRequiredData()
+//            mainViewModel.createWallet(Wallet(it.result.user!!.uid))
+//            navigatingTo()
+//        }
+//    }
+
+    private suspend fun getGoogleCredentials(context: Context, setFilterByAuthorizedAccounts: Boolean, successAuthenticating: (Task<AuthResult>) -> Unit) {
+        val result = CredentialManager.create(context).getCredential(request = getGoogleCredentialRequest(googleAccessRequest(context,setFilterByAuthorizedAccounts)), context = context)
+        handleSignIn(result) { successAuthenticating(it) }
     }
 
-    private suspend fun getGoogleSignInCredentials(
-        context: Context,
-        navigatingTo: () -> Unit,
-        mainViewModel: MainViewModel
-    ) {
-        val result = CredentialManager.create(context).getCredential(
-            request = getGoogleSignInCredentialRequest(googleSignInAccessRequest(context)),
-            context = context,
-        )
-        handleSignIn(result, navigatingTo,mainViewModel)
+    private suspend fun getGoogleSignInCredentials(context: Context, successAuthenticating: (Task<AuthResult>) -> Unit) {
+        val result = CredentialManager.create(context).getCredential(request = getGoogleSignInCredentialRequest(googleSignInAccessRequest(context)), context = context)
+        handleSignIn(result) { successAuthenticating(it) }
     }
 
     private fun handleFailure(e: Exception) {
@@ -113,11 +146,42 @@ class GoogleAuthenticationCredentialManager private constructor() {
     }
 
 
-    private fun handleSignIn(
-        result: GetCredentialResponse,
-        navigatingTo: () -> Unit,
-        mainViewModel: MainViewModel
-    ) {
+//    private fun handleSignIn(result: GetCredentialResponse, navigatingTo: () -> Unit, mainViewModel: MainViewModel) {
+//        when (val credential = result.credential) {
+//            is PublicKeyCredential -> {
+//                credential.authenticationResponseJson
+//            }
+//
+//            is PasswordCredential -> {
+//                val username = credential.id
+//                val password = credential.password
+//            }
+//
+//            is CustomCredential -> {
+//                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+//                    try {
+//                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+//                        FirebaseAuthentication.instance.signInFirebaseAuthentication(googleIdTokenCredential.idToken) {
+//                            mainViewModel.setFirebaseUser(it.result.user)
+//                            mainViewModel.getAllRequiredData()
+//                            mainViewModel.createWallet(Wallet(it.result.user!!.uid))
+//                            navigatingTo()
+//                        }
+//                    } catch (e: GoogleIdTokenParsingException) {
+//                        Log.e(TAG, "Received an invalid google id token response", e)
+//                    }
+//                } else {
+//                    Log.e(TAG, "Unexpected type of credential")
+//                }
+//            }
+//
+//            else -> {
+//                Log.e(TAG, "Unexpected type of credential")
+//            }
+//        }
+//    }
+
+    private fun handleSignIn(result: GetCredentialResponse, successAuthenticating: (Task<AuthResult>) -> Unit) {
         when (val credential = result.credential) {
             is PublicKeyCredential -> {
                 credential.authenticationResponseJson
@@ -132,7 +196,7 @@ class GoogleAuthenticationCredentialManager private constructor() {
                 if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                     try {
                         val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                        FirebaseAuthentication.instance.signInFirebaseAuthentication(googleIdTokenCredential.idToken,navigatingTo,mainViewModel)
+                        FirebaseAuthentication.instance.signInFirebaseAuthentication(googleIdTokenCredential.idToken) { successAuthenticating(it) }
                     } catch (e: GoogleIdTokenParsingException) {
                         Log.e(TAG, "Received an invalid google id token response", e)
                     }

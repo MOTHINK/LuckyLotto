@@ -1,6 +1,5 @@
 package com.example.luckylotto.ui.view.profile
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,8 +31,6 @@ import com.example.luckylotto.ui.view.components.TicketNumbers
 import com.example.luckylotto.ui.view.components.TicketsBought
 import com.example.luckylotto.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 
 @Composable
 fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel, rememberCoroutineScope: CoroutineScope) {
@@ -49,9 +46,7 @@ fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel, rememberCoroutineSc
             .padding(0.dp, 5.dp)
             .height(200.dp)
             .clip(RoundedCornerShape(10.dp))
-            .clickable {
-                showUpTicketInfoDialog = !showUpTicketInfoDialog
-            }
+            .clickable { showUpTicketInfoDialog = !showUpTicketInfoDialog }
     ) {
         AsyncImage(
             model = ticket.poolImage,
@@ -67,10 +62,7 @@ fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel, rememberCoroutineSc
                 PoolCardId(poolId = ticket.poolId)
                 TicketNumbers(Modifier.size(50.dp),ticket.ticketNumber, ticket.winningNumber)
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    modifier = Modifier.fillMaxWidth().height(50.dp).background(MaterialTheme.colorScheme.surfaceVariant),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {

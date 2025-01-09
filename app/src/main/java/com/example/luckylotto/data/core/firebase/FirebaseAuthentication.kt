@@ -2,8 +2,11 @@ package com.example.luckylotto.data.core.firebase
 
 import android.util.Log
 import com.example.luckylotto.data.model.Wallet
+import com.example.luckylotto.ui.navigation.AppNavigation
 import com.example.luckylotto.ui.viewmodel.MainViewModel
+import com.google.android.gms.tasks.Task
 import com.google.firebase.Firebase
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -26,15 +29,13 @@ class FirebaseAuthentication {
         return auth.currentUser
     }
 
-    fun signInFirebaseAuthentication(idToken: String, navigatingTo: () -> Unit, mainViewModel: MainViewModel) {
+    fun signInFirebaseAuthentication(idToken: String, successAuthenticating: (Task<AuthResult>) -> Unit) {
         val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
         this.auth.signInWithCredential(firebaseCredential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("Firebase_Auth_Success", "signInWithCredential:success")
-                    mainViewModel.setFirebaseUser(task.result.user)
-                    mainViewModel.createWallet(Wallet(userId = task.result.user!!.uid))
-                    navigatingTo()
+                    successAuthenticating(task)
                 } else {
                     Log.w("Firebase_Auth_Fail", "signInWithCredential:failure", task.exception)
                 }

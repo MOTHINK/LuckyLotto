@@ -29,7 +29,7 @@ fun CreatePoolScreen(mainViewModel: MainViewModel) {
     var poolImage by remember { mutableStateOf(mainViewModel.imageList[0]) }
     var isPrivate by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxSize().background(Color.White).padding(10.dp)) {
+    Box(modifier = Modifier.fillMaxSize().padding(10.dp)) {
         Box(modifier = Modifier.fillMaxSize().background(color = AppGreen, shape = RoundedCornerShape(10.dp))) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
