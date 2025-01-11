@@ -56,7 +56,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: (String) -> Unit, createNewTicket: () -> Unit, sharePool: () -> Unit) {
+fun PurchaseDialog(mainViewModel: MainViewModel, pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: (String) -> Unit, createNewTicket: () -> Unit, sharePool: () -> Unit) {
     var enoughCoins by remember { mutableStateOf(true) }
 
     Dialog(onDismissRequest = { onDismissRequest(false) }) {
@@ -75,123 +75,23 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // First Row
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(10.dp, 0.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Box(modifier = Modifier.weight(0.9f)) {
-                            PoolCardId(poolId = pool.poolId)
-                        }
-                        Box(modifier = Modifier.weight(0.1f)) {
-                            IconButton(
-                                onClick = { onDismissRequest(false) },
-                                modifier = Modifier.size(30.dp),
-                                colors = IconButtonDefaults.iconButtonColors(containerColor = CustomRed, contentColor = Color.Red)
-                            ) {
-                                Icon(modifier = Modifier.size(20.dp), imageVector = ImageVector.vectorResource(
-                                    R.drawable.close), contentDescription = "Close", tint = Color.White)
-                            }
-                        }
-                    }
-                    // Second Row
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(imageVector = ImageVector.vectorResource(R.drawable.paid), contentDescription = "Max prize", tint = Color.Black)
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Box {
-                            Text(
-                                modifier = Modifier.background(Color.White, shape = RoundedCornerShape(5.dp)),
-                                text = "${pool.maxPrize}€",
-                                color = Color.Black,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 30.sp
-                            )
-                        }
-                    }
-                    // Third row
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    )  {
-                        Icon(imageVector = ImageVector.vectorResource(R.drawable.group), contentDescription = "Number of players", tint = Color.Black)
-                        TicketsBought(pool.ticketsBought.toString(),pool.maxTickets.toString())
-                    }
-                    // Forth Row
+                    PoolIdRow(pool) { onDismissRequest(it) }
+                    PoolMaxPrizeRow(pool)
+                    PoolTicketBoughtRow(pool)
                     Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    )  {
-                        IconButton(
-                            onClick = { updatePool(pool.poolId) },
-                            modifier = Modifier.size(60.dp),
-                            colors = IconButtonDefaults.iconButtonColors(containerColor = CustomBlue)
-                        ) {
-                            Icon(modifier = Modifier.size(35.dp), imageVector = ImageVector.vectorResource(
-                                R.drawable.synchronize), contentDescription = "Synchronize", tint = Color.White)
-                        }
-                        IconButton(
-                            onClick = { sharePool() },
-                            modifier = Modifier.size(60.dp),
-                            colors = IconButtonDefaults.iconButtonColors(containerColor = CustomBlue)
-                        ) {
-                            Icon(modifier = Modifier.size(35.dp), imageVector = ImageVector.vectorResource(
-                                R.drawable.share), contentDescription = "Share", tint = Color.White)
-                        }
-                    }
-                    // Fifth Row
+                    PoolUpdateAndShareButtonsRow(
+                        pool = pool,
+                        updatePool = { updatePool(it) },
+                        sharePool = { sharePool() }
+                    )
                     Spacer(modifier = Modifier.height(20.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    )  {
-                        Button(
-                            modifier = Modifier.fillMaxWidth().height(50.dp),
-                            onClick = {
-                                createNewTicket()
-//                                enoughCoins = !enoughCoins
-                            },
-                            shape = ShapeDefaults.Small,
-                            colors = ButtonColors(CustomBlue, CustomBlue, CustomBlue, CustomBlue)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "Purchase Ticket",
-                                    color = Color.White,
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                Image(
-                                    modifier =  Modifier.size(40.dp),
-                                    painter = painterResource(id = R.drawable.coin),
-                                    contentScale = ContentScale.Crop,
-                                    contentDescription = "Coin image"
-                                )
-                            }
-                        }
-                    }
-                    // Sixth Row
+                    PoolPurchaseButtonRow(
+                        mainViewModel,
+                        enoughCoins = { enoughCoins = it },
+                        createNewTicket = { createNewTicket() }
+                    )
                     Spacer(modifier = Modifier.height(20.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    )  {
-                        Icon(imageVector = ImageVector.vectorResource(R.drawable.timer), contentDescription = "Number of players", tint = Color.Black)
-                        CircularCountDownTimer(pool.startTime, pool.closeTime,isVisible = { })
-                    }
+                    PoolTimerRow(pool)
                 }
                 // Custom Toast
                 if(!enoughCoins) {
@@ -200,12 +100,155 @@ fun PurchaseDialog(pool: Pool, onDismissRequest: (Boolean) -> Unit, updatePool: 
                         enoughCoins = !enoughCoins
                     }
                     Box(
-                        modifier = Modifier.height(50.dp).fillMaxWidth().padding(20.dp,5.dp).background(color = CustomRed, shape = ShapeDefaults.Small).align(Alignment.BottomCenter),
+                        modifier = Modifier
+                            .height(50.dp)
+                            .fillMaxWidth()
+                            .padding(20.dp, 5.dp)
+                            .background(color = CustomRed, shape = ShapeDefaults.Small)
+                            .align(Alignment.BottomCenter),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(text = " " + "you need 3 coins!" + " ", color = Color.White)
                     }
                 }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun PoolTimerRow(pool: Pool) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    )  {
+        Icon(imageVector = ImageVector.vectorResource(R.drawable.timer), contentDescription = "Timer", tint = Color.Black)
+        CircularCountDownTimer(pool.startTime, pool.closeTime,isVisible = { })
+    }
+}
+
+@Composable
+fun PoolPurchaseButtonRow(mainViewModel: MainViewModel, enoughCoins: (Boolean) -> Unit, createNewTicket: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    )  {
+        Button(
+            modifier = Modifier.fillMaxWidth().height(50.dp),
+            onClick = {
+                if(mainViewModel.checkEnoughCoins()) {
+                    mainViewModel.decrementingThreeCoins()
+                    createNewTicket()
+                } else {
+                    enoughCoins(false)
+                }
+            },
+            shape = ShapeDefaults.Small,
+            colors = ButtonColors(CustomBlue, CustomBlue, CustomBlue, CustomBlue)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Purchase Ticket",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Image(
+                    modifier =  Modifier.size(40.dp),
+                    painter = painterResource(id = R.drawable.coin),
+                    contentScale = ContentScale.Crop,
+                    contentDescription = "Coin image"
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PoolUpdateAndShareButtonsRow(pool: Pool, updatePool: (String) -> Unit, sharePool: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
+    )  {
+        IconButton(
+            onClick = { updatePool(pool.poolId) },
+            modifier = Modifier.size(60.dp),
+            colors = IconButtonDefaults.iconButtonColors(containerColor = CustomBlue)
+        ) {
+            Icon(modifier = Modifier.size(35.dp), imageVector = ImageVector.vectorResource(
+                R.drawable.synchronize), contentDescription = "Synchronize", tint = Color.White)
+        }
+        IconButton(
+            onClick = { sharePool() },
+            modifier = Modifier.size(60.dp),
+            colors = IconButtonDefaults.iconButtonColors(containerColor = CustomBlue)
+        ) {
+            Icon(modifier = Modifier.size(35.dp), imageVector = ImageVector.vectorResource(
+                R.drawable.share), contentDescription = "Share", tint = Color.White)
+        }
+    }
+}
+
+@Composable
+fun PoolTicketBoughtRow(pool: Pool) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    )  {
+        Icon(imageVector = ImageVector.vectorResource(R.drawable.group), contentDescription = "Number of players", tint = Color.Black)
+        TicketsBought(pool.ticketsBought.toString(),pool.maxTickets.toString())
+    }
+}
+
+@Composable
+fun PoolMaxPrizeRow(pool: Pool) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(20.dp, 0.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(imageVector = ImageVector.vectorResource(R.drawable.paid), contentDescription = "Max prize", tint = Color.Black)
+        Spacer(modifier = Modifier.width(5.dp))
+        Box {
+            Text(
+                modifier = Modifier.background(Color.White, shape = RoundedCornerShape(5.dp)),
+                text = "${pool.maxPrize}€",
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp
+            )
+        }
+    }
+}
+
+@Composable
+
+private fun PoolIdRow(pool: Pool, onDismissRequest: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(10.dp, 0.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Box(modifier = Modifier.weight(0.9f)) {
+            PoolCardId(poolId = pool.poolId)
+        }
+        Box(modifier = Modifier.weight(0.1f)) {
+            IconButton(
+                onClick = { onDismissRequest(false) },
+                modifier = Modifier.size(30.dp),
+                colors = IconButtonDefaults.iconButtonColors(containerColor = CustomRed, contentColor = Color.Red)
+            ) {
+                Icon(modifier = Modifier.size(20.dp), imageVector = ImageVector.vectorResource(
+                    R.drawable.close), contentDescription = "Close", tint = Color.White)
             }
         }
     }

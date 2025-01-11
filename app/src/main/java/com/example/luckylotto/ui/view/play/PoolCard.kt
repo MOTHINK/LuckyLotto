@@ -38,6 +38,7 @@ fun PoolCard(pool: Pool, mainViewModel: MainViewModel, rememberCoroutineScope: C
 
     if(showUp) {
         PurchaseDialog(
+            mainViewModel,
             pool,
             onDismissRequest = { showUp = it },
             updatePool = { rememberCoroutineScope.launch { mainViewModel.updateTicketAndPoolByPoolId(it) } },
@@ -50,9 +51,7 @@ fun PoolCard(pool: Pool, mainViewModel: MainViewModel, rememberCoroutineScope: C
                     }
                 }
             },
-            sharePool = {
-                mainViewModel.sharePool(pool.poolId)
-            }
+            sharePool = { mainViewModel.sharePool(pool.poolId) }
         )
     }
 
@@ -61,9 +60,7 @@ fun PoolCard(pool: Pool, mainViewModel: MainViewModel, rememberCoroutineScope: C
             modifier = Modifier
                 .fillMaxSize()
                 .padding(0.dp, 5.dp)
-                .clickable {
-                    showUp = true
-                }
+                .clickable { showUp = true }
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 AsyncImage(

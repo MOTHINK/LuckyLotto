@@ -1,5 +1,6 @@
 package com.example.luckylotto.ui.view.profile
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,17 +18,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.luckylotto.R
+import com.example.luckylotto.data.core.admob.Admob
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
 import com.example.luckylotto.data.model.Wallet
 import com.example.luckylotto.ui.navigation.AppNavigation
@@ -46,6 +54,8 @@ import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun ProfileCard(mainViewModel: MainViewModel, modifier: Modifier) {
+    val localContext = LocalContext.current
+    var isLoading by remember { mutableStateOf(false) }
     Surface(modifier = modifier.shadow(elevation = 20.dp, spotColor = Color.Black, ambientColor = Color.Black, shape = RoundedCornerShape(15.dp))) {
         Box(modifier = modifier.background(AppGreen).fillMaxWidth().padding(10.dp)) {
             Column(modifier = modifier.fillMaxWidth()) {
@@ -76,7 +86,16 @@ fun ProfileCard(mainViewModel: MainViewModel, modifier: Modifier) {
                 }
                 Spacer(modifier = modifier.height(10.dp))
                 Column(modifier = modifier.fillMaxWidth().height(50.dp).padding(15.dp, 0.dp)) {
-                    PurchaseCoins {}
+                    PurchaseCoins(
+                        isLoading,
+                        loading = { isLoading = it },
+                        onClick = {
+                            Admob.instance.loadRewardedInterstitialAd(localContext) {
+                                mainViewModel.incrementCoin()
+                                isLoading = false
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -126,26 +145,27 @@ private fun UserLogo() {
 
 @Composable
 private fun LogoutButton(onClick: () -> Unit) {
-    val size = 50
     IconButton(
         modifier =  Modifier.size(85.dp),
         onClick = { onClick() }
     ) {
         Box(
-            modifier = Modifier.size(size.dp),
+            modifier = Modifier.size(50.dp),
             contentAlignment = Alignment.Center
         ) {
-            ImageIcon(size,R.drawable.logout,"Logout")
+            ImageIcon(50,R.drawable.logout,"Logout")
         }
     }
 }
 
 @Composable
-private fun PurchaseCoins(onClick: () -> Unit) {
-    val size = 50
+private fun PurchaseCoins(isLoading: Boolean, loading: (Boolean) -> Unit, onClick: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth().height(50.dp),
-        onClick = { onClick() },
+        onClick = {
+            onClick()
+            loading(true)
+        },
         shape = RoundedCornerShape(15.dp),
         border = BorderStroke(1.dp, color = CustomDarkBlue),
         color = CustomBlue
@@ -158,7 +178,7 @@ private fun PurchaseCoins(onClick: () -> Unit) {
                 modifier = Modifier.fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
-                ImageIcon(size,R.drawable.ads,"Ads")
+                ImageIcon(50,R.drawable.ads,"Ads")
             }
             Spacer(modifier = Modifier.width(20.dp))
             Box(
@@ -171,6 +191,15 @@ private fun PurchaseCoins(onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
+            }
+            if(isLoading) {
+                Spacer(modifier = Modifier.width(10.dp))
+                Box(
+                    modifier = Modifier.fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(30.dp), strokeWidth = 3.dp, color = Color.White)
+                }
             }
         }
     }
@@ -188,12 +217,11 @@ private fun MailCard(onClick: () -> Unit) {
 
 @Composable
 private fun MessageCounter() {
-    val size = 70
     Box(
-        modifier = Modifier.size(size.dp),
+        modifier = Modifier.size(70.dp),
         contentAlignment = Alignment.Center
     ){
-        ImageIcon(size,R.drawable.mail,"Message counter")
+        ImageIcon(70,R.drawable.mail,"Message counter")
         Box(modifier = Modifier.offset(x = 20.dp, y = (-10).dp).clip(CircleShape).background(Color.Red)) {
             Text(
                 modifier = Modifier.size(30.dp).align(Alignment.Center).padding(0.dp, 3.dp),
@@ -208,13 +236,12 @@ private fun MessageCounter() {
 
 @Composable
 private fun WonCounter() {
-    val size = 50
     Column {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-            ImageIcon(size,R.drawable.win,"Coin counter")
+            ImageIcon(50,R.drawable.win,"Coin counter")
         }
         Spacer(modifier = Modifier.height(10.dp))
         Box(

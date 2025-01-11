@@ -21,8 +21,7 @@ class Admob {
     fun initializeMobileAds(context: Context) {
         MobileAds.initialize(context) {}
     }
-
-    fun loadRewardedInterstitialAd(context: Context) {
+    fun loadRewardedInterstitialAd(context: Context, obtainReward: () -> Unit) {
         val adRequest = AdRequest.Builder().build()
 
         RewardedInterstitialAd.load(context,rewardedInterstitialAdUnitId, adRequest, object : RewardedInterstitialAdLoadCallback() {
@@ -30,21 +29,22 @@ class Admob {
                 rewardedInterstitialAd = ad
                 Log.d("Ad loaded", "RewardedInterstitialAd was loaded.")
 
+                (context as? Activity)?.let { showRewardedInterstitialAd(it) { obtainReward() } }
+
                 rewardedInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
                     override fun onAdClicked() {
                         Log.d("Ad clicked", "Ad was clicked.")
                     }
 
                     override fun onAdDismissedFullScreenContent() {
-                        Log.d("Ad dismissed", "Ad was dismissed.")
-                        rewardedInterstitialAd = null
-                        loadRewardedInterstitialAd(context) //Load the next ad
+                        Log.d("Ad_dismissed", "Ad was dismissed.")
                     }
 
                     override fun onAdShowedFullScreenContent() {
                         // Called when ad is shown.
                         Log.d("Ad showed", "Ad was shown.")
                     }
+
                 }
             }
 
@@ -58,17 +58,16 @@ class Admob {
     fun showRewardedInterstitialAd(activity: Activity, onUserEarnedReward: () -> Unit) {
         if(rewardedInterstitialAd != null) {
             rewardedInterstitialAd?.show(activity, OnUserEarnedRewardListener { rewardItem ->
-                Log.d("Reward earned", "User earned the reward.")
                 val rewardAmount = rewardItem.amount
                 val rewardType = rewardItem.type
                 Log.d("Reward amount", rewardAmount.toString())
                 Log.d("Reward type", rewardType)
                 onUserEarnedReward()
                 rewardedInterstitialAd = null
+                Log.d("Reward_earned", "User earned the reward.")
             })
         } else {
             Log.d("Ad not loaded", "The rewarded interstitial ad wasn't ready yet.")
         }
     }
-
 }

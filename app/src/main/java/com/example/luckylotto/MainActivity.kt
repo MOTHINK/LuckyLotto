@@ -2,11 +2,9 @@ package com.example.luckylotto
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -27,34 +25,30 @@ import com.example.luckylotto.ui.theme.LuckyLottoTheme
 import com.example.luckylotto.ui.view.components.NewCustomBottomBar
 import com.example.luckylotto.ui.view.create.SnackBarMessage
 import com.example.luckylotto.ui.viewmodel.MainViewModel
-import com.google.android.gms.ads.OnUserEarnedRewardListener
-import com.google.android.gms.ads.rewarded.RewardItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Suppress("UNCHECKED_CAST")
-class MainActivity : ComponentActivity(), OnUserEarnedRewardListener {
+class MainActivity : ComponentActivity() {
+
+    // vysor
+    // ADAWAY
 
     private lateinit var mainViewModel: MainViewModel
     private lateinit var container: AppContainer
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition", "StateFlowValueCalledInComposition", "RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Initialize Mobile Ads
         CoroutineScope(Dispatchers.IO).launch {
             Admob.instance.initializeMobileAds(this@MainActivity)
         }
-        // Initialize database container
         container = AppDataContainer(this)
-        // Setting Splash Screen
         installSplashScreen()
 
         setContent {
             LuckyLottoTheme {
-                // Initialize ViewModel
                 mainViewModel = InitializeMainViewModels(container.poolRepository,container.ticketRepository,container.walletRepository)
-                // App Structure
                 Scaffold(
                     bottomBar = { if(mainViewModel.user.collectAsState().value != null) NewCustomBottomBar(mainViewModel,Modifier) },
                     snackbarHost = { SnackBarMessage(mainViewModel) }
@@ -81,10 +75,6 @@ class MainActivity : ComponentActivity(), OnUserEarnedRewardListener {
                 }
             }
         )
-    }
-
-    override fun onUserEarnedReward(rewardItem: RewardItem) {
-        Log.d("USER_EARNED_REWARD", "User earned reward. ${rewardItem.toString()}")
     }
 
 }

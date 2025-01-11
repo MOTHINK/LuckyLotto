@@ -102,8 +102,20 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
         }
     }
 
-    suspend fun incrementCoin() {
-        walletRepository.updateWalletIncrementingCoinsById(FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid, wallet.value!!.coins)
+    fun incrementCoin() {
+        viewModelScope.launch {
+            walletRepository.updateWalletIncrementingCoinsById(FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid, wallet.value!!.coins)
+        }
+    }
+
+    fun decrementingThreeCoins() {
+        viewModelScope.launch {
+            walletRepository.updateWalletDecrementingThreeCoinsById(FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid, wallet.value!!.coins)
+        }
+    }
+
+    fun checkEnoughCoins(): Boolean {
+        return _wallet.value!!.coins >= 3
     }
 
     fun setNavBarIndex(index: Int) {
@@ -147,7 +159,6 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     }
 
     suspend fun createPoolAndGetTicket(firebaseDB: FirebaseFirestore, maxTickets: Int, closeTime: Long, poolImage: String, isPrivate: Boolean): Boolean {
-        Log.d("Checking1234", "Executing createPoolAndGetTicket function")
         val pool = Pool(
             poolId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.displayName.toString()+"-"+System.currentTimeMillis(),
             userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()?.uid.toString(),
@@ -162,7 +173,6 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     }
 
     private suspend fun createNewPool(firebaseDB: FirebaseFirestore, pool: Pool): Boolean {
-        Log.d("Checking1234", "Executing createNewPool")
         var inserted = false
         if(OnlinePoolsRepository.instance.insertPool(firebaseDB,pool)) {
             inserted = try {
@@ -177,7 +187,6 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     }
 
     suspend fun createNewTicket(firebaseDB: FirebaseFirestore, pool: Pool): Boolean {
-        Log.d("Checking1234", "Executing createNewTicket")
         var inserted = false
         var incrementedLocal = false
         var incrementedOnline = false
@@ -212,7 +221,6 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
                 false
             }
         }
-        Log.d("Checking1234", "inserted: $inserted - incrementedLocal: $incrementedLocal - incrementedOnline: $incrementedOnline")
         return inserted && incrementedLocal && incrementedOnline
     }
 

@@ -9,5 +9,6 @@ interface WalletRepository {
     fun getWallet(userId: String): Flow<Wallet?>
     suspend fun deleteWallet(wallet: Wallet)
     suspend fun updateWalletIncrementingCoinsById(userId: String, coins: Int)
+    suspend fun updateWalletDecrementingThreeCoinsById(userId: String, coins: Int)
 
 }

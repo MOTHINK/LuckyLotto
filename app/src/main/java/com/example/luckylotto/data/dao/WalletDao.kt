@@ -18,4 +18,7 @@ interface WalletDao {
     suspend fun delete(wallet: Wallet)
     @Query("UPDATE wallets SET coins = :coins + 1 WHERE userId = :userId")
     suspend fun updateWalletIncrementingCoinsById(userId: String, coins: Int)
+
+    @Query("UPDATE wallets SET coins = :coins - 3 WHERE userId = :userId")
+    suspend fun updateWalletDecrementingThreeCoinsById(userId: String, coins: Int)
 }

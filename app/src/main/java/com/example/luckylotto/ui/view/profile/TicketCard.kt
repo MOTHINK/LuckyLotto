@@ -33,7 +33,7 @@ import com.example.luckylotto.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel, rememberCoroutineScope: CoroutineScope) {
+fun TicketCard(ticket: Ticket, mainViewModel: MainViewModel) {
     var showUpTicketInfoDialog by remember { mutableStateOf(false) }
 
     if(showUpTicketInfoDialog) {
