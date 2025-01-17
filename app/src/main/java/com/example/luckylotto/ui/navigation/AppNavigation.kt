@@ -26,38 +26,22 @@ import com.example.luckylotto.ui.viewmodel.MainViewModel
 
 class AppNavigation private constructor() {
     private lateinit var navController: NavController
-    companion object {
-        val instance:AppNavigation by lazy { AppNavigation() }
-    }
+    companion object { val instance:AppNavigation by lazy { AppNavigation() } }
     @SuppressLint("ComposableNaming", "RestrictedApi")
     @Composable
     fun InitializeNavigation(mainViewModel: MainViewModel) {
-        Log.d("Laputa_22", " Creating navigation")
         navController = rememberNavController()
         HandleNavBarSelection(mainViewModel)
         NavHost(
             this.setNavController(navController) as NavHostController,
             remember(navController) {
                 navController.createGraph(startDestination = startDestination()) {
-                    composable(NavigationItem.LOGIN.route) {
-                        Log.d("Laputa_11", " este es el argumento: login")
-                        LoginScreen(mainViewModel)
-                    }
-                    composable(NavigationItem.PROFILE.route) {
-                        Log.d("Laputa_11", " este es el argumento: profile")
-                        ProfileScreen(mainViewModel)
-                    }
-                    composable(
-                        NavigationItem.PLAY.route,
-                        deepLinks = listOf(navDeepLink { uriPattern = DeepLinkUriPatternItem.PLAY_DEEP_LINK.route })
-                    ) {
-                        Log.d("Laputa_11", " este es el argumento: play")
+                    composable(NavigationItem.LOGIN.route) { LoginScreen(mainViewModel) }
+                    composable(NavigationItem.PROFILE.route) { ProfileScreen(mainViewModel) }
+                    composable(NavigationItem.PLAY.route, deepLinks = listOf(navDeepLink { uriPattern = DeepLinkUriPatternItem.PLAY_DEEP_LINK.route })) {
                         PlayScreen(mainViewModel, it.arguments?.getString(DeepLinkUriPatternItem.PLAY_DEEP_LINK_ARGUMENT.route).orEmpty())
                     }
-                    composable(NavigationItem.CREATE.route) {
-                        Log.d("Laputa_11", " este es el argumento: create")
-                        CreatePoolScreen(mainViewModel)
-                    }
+                    composable(NavigationItem.CREATE.route) { CreatePoolScreen(mainViewModel) }
                 }
             }
         )

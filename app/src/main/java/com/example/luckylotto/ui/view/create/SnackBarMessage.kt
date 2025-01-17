@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.luckylotto.ui.theme.AppGreen
+import com.example.luckylotto.ui.theme.CustomRed
 import com.example.luckylotto.ui.viewmodel.MainViewModel
 
 
@@ -27,8 +28,7 @@ import com.example.luckylotto.ui.viewmodel.MainViewModel
 fun SnackBarMessage(mainViewModel: MainViewModel) {
     val snackBarHostState = remember { SnackbarHostState() }
     val messageNum by mainViewModel.snackBarMessage.collectAsState()
-
-    val messages = listOf("","Pool created successfully","purchased ticket successfully","Refreshing lottery pool")
+    val messages = listOf("","Pool created successfully","purchased ticket successfully","Refreshing lottery pool", "you need 3 coins!")
 
     LaunchedEffect(key1 = messageNum) {
         if (messageNum != 0) {
@@ -43,12 +43,7 @@ fun SnackBarMessage(mainViewModel: MainViewModel) {
             contentAlignment = Alignment.BottomCenter
         ) {
             Text(
-                modifier = Modifier
-                    .background(
-                        color = AppGreen,
-                        shape = ShapeDefaults.Small
-                    )
-                    .padding(10.dp),
+                modifier = Modifier.background(color = if(messageNum == 4) CustomRed else AppGreen, shape = ShapeDefaults.Small).padding(10.dp),
                 text = messages[messageNum],
                 color = Color.White,
                 fontSize = 18.sp,

@@ -38,13 +38,16 @@ fun CreateNewPoolButton(mainViewModel: MainViewModel, maxTickets: Int, closeTime
         modifier = Modifier.padding(20.dp, 0.dp).fillMaxWidth().height(50.dp),
         onClick = {
             coroutineScope.launch {
-                // We also need to check if we have enough coins to purchase a ticket.
-                isLoading = true
-                Log.d("Checking1234", "Clicking create new pool button")
-                if(this.async { mainViewModel.createPoolAndGetTicket(mainViewModel.firebaseDB,maxTickets,closeTime,poolImage,isPrivate) }.await()) {
-                    mainViewModel.setSnackBarMessage(1)
-                    AppNavigation.instance.appNavigation()[1]()
-                    isLoading = false
+                if(mainViewModel.checkEnoughCoins()) {
+                    isLoading = true
+                    if(this.async { mainViewModel.createPoolAndGetTicket(mainViewModel.firebaseDB,maxTickets,closeTime,poolImage,isPrivate) }.await()) {
+                        mainViewModel.decrementingThreeCoins()
+                        mainViewModel.setSnackBarMessage(1)
+                        AppNavigation.instance.appNavigation()[1]()
+                        isLoading = false
+                    }
+                } else {
+                    mainViewModel.setSnackBarMessage(4)
                 }
             }
         },
