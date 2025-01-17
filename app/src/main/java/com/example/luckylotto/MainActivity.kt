@@ -32,18 +32,18 @@ import kotlinx.coroutines.launch
 @Suppress("UNCHECKED_CAST")
 class MainActivity : ComponentActivity() {
 
-    // vysor
-    // ADAWAY
-
     private lateinit var mainViewModel: MainViewModel
     private lateinit var container: AppContainer
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition", "StateFlowValueCalledInComposition", "RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         CoroutineScope(Dispatchers.IO).launch {
             Admob.instance.initializeMobileAds(this@MainActivity)
         }
+
         container = AppDataContainer(this)
+
         installSplashScreen()
 
         setContent {

@@ -44,30 +44,12 @@ fun TopNavBarSearchPoolCard(mainViewModel: MainViewModel) {
     val focusManager = LocalFocusManager.current
 
     Column(modifier = Modifier.fillMaxWidth().height(60.dp)) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .weight(0.85f)
-                    .height(60.dp)
-                    .background(
-                        color = AppGreen,
-                        shape = RoundedCornerShape(10.dp)
-                    )
-            ) {
+        Row(modifier = Modifier.fillMaxWidth().height(60.dp)) {
+            Box(modifier = Modifier.weight(0.85f).height(60.dp).background(color = AppGreen, shape = RoundedCornerShape(10.dp))) {
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .fillMaxWidth()
-                            .padding(5.dp, 5.dp)
-                    ) {
+                    Box(modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(5.dp, 5.dp)) {
                         OutlinedTextField(
-                            modifier = Modifier.fillMaxSize()
-                            ,
+                            modifier = Modifier.fillMaxSize(),
                             leadingIcon = {
                                 Icon(
                                     modifier = Modifier.padding(10.dp),

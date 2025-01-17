@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -> Unit, ticket: Ticket) {
+    val context = LocalContext.current
     var showUpConfirmDeleteTicketAlertDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -137,7 +139,7 @@ fun TicketInfoDialog(mainViewModel: MainViewModel, onDismissRequest: (Boolean) -
                                 R.drawable.synchronize), contentDescription = "Synchronize", tint = Color.White)
                         }
                         IconButton(
-                            onClick = { mainViewModel.sharePool(ticket.poolId) },
+                            onClick = { mainViewModel.sharePool(context,ticket.poolId) },
                             modifier = Modifier.size(60.dp),
                             colors = IconButtonDefaults.iconButtonColors(containerColor = CustomBlue)
                         ) {

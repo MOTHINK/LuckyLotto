@@ -1,6 +1,7 @@
 package com.example.luckylotto.ui.viewmodel
 
-import android.util.Log
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
@@ -14,7 +15,7 @@ import com.example.luckylotto.data.repository.prize_request_repository.OnlinePri
 import com.example.luckylotto.data.repository.ticket_repository.OnlineTicketRepository
 import com.example.luckylotto.data.repository.ticket_repository.TicketRepository
 import com.example.luckylotto.data.repository.wallet_repository.WalletRepository
-import com.example.luckylotto.utils.randomTicketNumbers
+import com.example.luckylotto.ui.navigation.DeepLinkUriPatternItem
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -187,13 +188,12 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
     }
 
     suspend fun createNewTicket(firebaseDB: FirebaseFirestore, pool: Pool): Boolean {
-        var inserted = false
-        var incrementedLocal = false
-        var incrementedOnline = false
+        var inserted: Boolean
+        var incrementedLocal: Boolean
+        var incrementedOnline: Boolean
 
         val ticket = Ticket(
             ticketId = UUID.randomUUID().toString(),
-            ticketNumber = randomTicketNumbers(),
             poolId = pool.poolId,
             userId = FirebaseAuthentication.instance.getFirebaseCurrentUser()!!.uid,
             closeTime = pool.startTime+(pool.closeTime-pool.startTime),
@@ -203,11 +203,12 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
             privatePool = pool.isPrivate
         )
 
-        if(OnlineTicketRepository.instance.insertTicket(firebaseDB,ticket)) {
-            inserted = try {
-                ticketRepository.insertTicket(ticket)
+        OnlineTicketRepository.instance.insertTicket(firebaseDB,ticket).apply {
+
+            inserted = if(this != null) {
+                ticketRepository.insertTicket(this)
                 true
-            } catch (_: Exception) {
+            } else {
                 false
             }
 
@@ -221,13 +222,12 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
                 false
             }
         }
+
         return inserted && incrementedLocal && incrementedOnline
     }
 
     private fun updateTicketOnDatabase(ticket: Ticket) {
-        viewModelScope.launch {
-            ticketRepository.updateTicket(ticket)
-        }
+        viewModelScope.launch { ticketRepository.updateTicket(ticket) }
     }
 
     fun deleteTicketById(ticketId: String): Boolean {
@@ -270,10 +270,14 @@ class MainViewModel(private val poolRepository: PoolRepository,private val ticke
 
     suspend fun updateTicketAndPoolByPoolId(poolId: String) {
         updatePoolById(poolId)
-    }
+    } 
 
-    fun sharePool(poolId: String) {
-
+    fun sharePool(context: Context, poolId: String) {
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, DeepLinkUriPatternItem.PLAY_DEEP_LINK.route.replace("{${DeepLinkUriPatternItem.PLAY_DEEP_LINK_ARGUMENT.route}}", poolId))
+        }
+        context.startActivity(Intent.createChooser(shareIntent, "Sharing with"))
     }
 
     suspend fun claimingPrize(ticket: Ticket): Boolean {

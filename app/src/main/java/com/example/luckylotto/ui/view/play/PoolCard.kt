@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.luckylotto.data.model.Pool
@@ -32,7 +33,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun PoolCard(pool: Pool, mainViewModel: MainViewModel, rememberCoroutineScope: CoroutineScope) {
-
+    val context = LocalContext.current
     var showUp by remember { mutableStateOf(false) }
     var isVisible by remember { mutableStateOf(true) }
 
@@ -51,17 +52,12 @@ fun PoolCard(pool: Pool, mainViewModel: MainViewModel, rememberCoroutineScope: C
                     }
                 }
             },
-            sharePool = { mainViewModel.sharePool(pool.poolId) }
+            sharePool = { mainViewModel.sharePool(context,pool.poolId) }
         )
     }
 
     if(isVisible) {
-        Card(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(0.dp, 5.dp)
-                .clickable { showUp = true }
-        ) {
+        Card(modifier = Modifier.fillMaxSize().padding(0.dp, 5.dp).clickable { showUp = true }) {
             Box(modifier = Modifier.fillMaxSize()) {
                 AsyncImage(
                     model = pool.poolImage,
