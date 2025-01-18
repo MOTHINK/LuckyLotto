@@ -1,4 +1,4 @@
-package com.example.luckylotto.ui.util
+package com.example.luckylotto.utils
 
 fun generateNonce(length: Int = 32): String {
     val unixTimestamp: Long = 1657514400 // Example Unix timestamp (in seconds)

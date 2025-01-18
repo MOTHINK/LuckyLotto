@@ -14,9 +14,7 @@ import androidx.credentials.PublicKeyCredential
 import androidx.credentials.exceptions.NoCredentialException
 import com.example.luckylotto.R
 import com.example.luckylotto.data.core.firebase.FirebaseAuthentication
-import com.example.luckylotto.data.model.Wallet
-import com.example.luckylotto.ui.util.generateNonce
-import com.example.luckylotto.ui.viewmodel.MainViewModel
+import com.example.luckylotto.utils.generateNonce
 import com.google.android.gms.tasks.Task
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
