@@ -25,3 +25,14 @@
   <li>Buy lottery tickets, using "virtual coins" that you get by watching ads.</li>
   <li>Share the lotteries with friends by sending to them a link with a specific lottery</li>
 </ul>
+
+<div>
+  <h1>Built with</h1>
+</div>
+
+<ul>
+  <li>:![Alt text](https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png): Kotlin</li>
+  <li> Jetpack compose</li>
+</ul>
+
+
