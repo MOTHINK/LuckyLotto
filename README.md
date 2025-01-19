@@ -20,19 +20,19 @@
   <h1>Features</h1>
 </div>
 
-<ul>
-  <li>Creates and configure your own lotteries, setting maximum tickets to purchase, countdown timer, private or not, etc...</li>
-  <li>Buy lottery tickets, using "virtual coins" that you get by watching ads.</li>
-  <li>Share the lotteries with friends by sending to them a link with a specific lottery</li>
-</ul>
+- `Creates and configure your own lotteries, setting maximum tickets to purchase, countdown timer, private or not, etc...`
+- `Buy lottery tickets, using "virtual coins" that you get by watching ads`
+- `Share the lotteries with friends by sending to them a link with a specific lottery`
 
 <div>
   <h1>Built with</h1>
 </div>
 
-<ul>
-  <li>:![Alt text](https://upload.wikimedia.org/wikipedia/commons/7/74/Kotlin_Icon.png): Kotlin</li>
-  <li> Jetpack compose</li>
-</ul>
+- `Kotlin`
+- `Jetpack compose`
 
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white)
+![C++](https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
 
