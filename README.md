@@ -21,16 +21,16 @@
 </div>
 
 - `Creates and configure your own lotteries, setting maximum tickets to purchase, countdown timer, private or not, etc...`
-- `Buy lottery tickets, using "virtual coins" that you get by watching ads`
+- `Buy lottery tickets, using "virtual coins" that you obtain by watching ads`
 - `Share the lotteries with friends by sending to them a link with a specific lottery`
 
 <div>
   <h1>Built with</h1>
 </div>
 
-- `Kotlin`
-- `Jetpack compose`
+
 
 ![Kotlin](https://img.shields.io/badge/Kotlin-purple?style=for-the-badge&logo=Kotlin&logoColor=white)
-![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-f0027f?style=for-the-badge&logo=JetBrains&logoColor=white)
+<br/>
+![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-055ffa?style=for-the-badge&logo=jetpackcompose&logoColor=white)
 
