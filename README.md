@@ -20,6 +20,7 @@
   <h1>Features</h1>
 </div>
 
+- `Signing up using Google credentials to play`
 - `Creates and configure your own lotteries, setting maximum tickets to purchase, countdown timer, private or not, etc...`
 - `Buy lottery tickets, using "virtual coins" that you obtain by watching ads`
 - `Share the lotteries with friends by sending to them a link with a specific lottery`
@@ -28,9 +29,24 @@
   <h1>Built with</h1>
 </div>
 
-
-
 ![Kotlin](https://img.shields.io/badge/Kotlin-purple?style=for-the-badge&logo=Kotlin&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-055ffa?style=for-the-badge&logo=jetpackcompose&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/Firebase-f5430c?style=for-the-badge&logo=firebase&logoColor=white)
+
+<div>
+  <h1>Libraries used</h1>
+</div>
+
+- `Room Database`
+- `Coil`
+- `Admob`
+
+<div>
+  <h1>Architecture</h1>
+</div>
+
+ - `MVVM (Model - View - ViewModel) Architecture`
+ - `Sigle Acitivy`
+ - `Single ViewModel`
+
 
