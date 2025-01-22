@@ -31,6 +31,6 @@
 
 
 ![Kotlin](https://img.shields.io/badge/Kotlin-purple?style=for-the-badge&logo=Kotlin&logoColor=white)
-<br/>
 ![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-055ffa?style=for-the-badge&logo=jetpackcompose&logoColor=white)
+![Jetpack Compose](https://img.shields.io/badge/Firebase-f5430c?style=for-the-badge&logo=firebase&logoColor=white)
 
