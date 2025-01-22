@@ -42,6 +42,12 @@
 - `Admob`
 
 <div>
+  <h1>Third party libraries</h1>
+</div>
+
+- `Exyte Animated Navigation Bar` [Github link](https://github.com/exyte/AndroidAnimatedNavigationBar)
+
+<div>
   <h1>Architecture</h1>
 </div>
 
