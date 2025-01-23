@@ -36,6 +36,6 @@
             tools:replace="android:resource" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-7926597932830881~6925835182"/>
+            android:value="{#}"/>
     </application>
 </manifest>
