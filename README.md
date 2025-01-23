@@ -63,7 +63,6 @@
   <h1>Example</h1>
 </div>
 
-
 <img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/login.png" width=250 height=500>
 <img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/login_with.png" width=250 height=500>
 
@@ -117,3 +116,12 @@ can join the lottery.`
 its an old ticket, when you delete a ticket you can't get again`.
 
 <br clear="left"/>
+
+<div>
+  <h1>How to use</h1>  
+</div>
+
+`To use the app, you need to create your own firebase project and admob account, you have to follow a few steps:`
+<br/>
+- `Replace google-service.json file with new one, you can do this by following this:` [firebase tutorial](https://firebase.google.com/docs/android/)
+- `Replace Admob app ID (within manifest file) and ad unit ID (), `
