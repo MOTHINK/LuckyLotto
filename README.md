@@ -63,6 +63,29 @@
   <h1>Example</h1>
 </div>
 
+<div style="display: flex; justify-content: center; align-items: center;">
+  <div style="flex: 1; text-align: center;">
+    <img src="path/to/image1.png" alt="Image 1" style="max-width: 100%;">
+  </div>
+  <div style="flex: 1; text-align: center;">
+    <img src="path/to/image2.png" alt="Image 2" style="max-width: 100%;">
+  </div>
+  <div style="flex: 1; text-align: center;">
+    <img src="path/to/image3.png" alt="Image 3" style="max-width: 100%;">
+  </div>
+</div>
+<div style="display: flex; justify-content: center; align-items: center;">
+  <div style="flex: 1; text-align: center;">
+    <img src="path/to/image4.png" alt="Image 4" style="max-width: 100%;">
+  </div>
+  <div style="flex: 1; text-align: center;">
+    <img src="path/to/image5.png" alt="Image 5" style="max-width: 100%;">
+  </div>
+  <div style="flex: 1; text-align: center;">
+    <img src="path/to/image6.png" alt="Image 6" style="max-width: 100%;">
+  </div>
+</div>
+
 
 
 
