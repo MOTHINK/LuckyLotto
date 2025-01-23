@@ -63,29 +63,57 @@
   <h1>Example</h1>
 </div>
 
-<div style="display: flex; justify-content: center; align-items: center;">
-  <div style="flex: 1; text-align: center;">
-    <img src="path/to/image1.png" alt="Image 1" style="max-width: 100%;">
-  </div>
-  <div style="flex: 1; text-align: center;">
-    <img src="path/to/image2.png" alt="Image 2" style="max-width: 100%;">
-  </div>
-  <div style="flex: 1; text-align: center;">
-    <img src="path/to/image3.png" alt="Image 3" style="max-width: 100%;">
-  </div>
-</div>
-<div style="display: flex; justify-content: center; align-items: center;">
-  <div style="flex: 1; text-align: center;">
-    <img src="path/to/image4.png" alt="Image 4" style="max-width: 100%;">
-  </div>
-  <div style="flex: 1; text-align: center;">
-    <img src="path/to/image5.png" alt="Image 5" style="max-width: 100%;">
-  </div>
-  <div style="flex: 1; text-align: center;">
-    <img src="path/to/image6.png" alt="Image 6" style="max-width: 100%;">
-  </div>
-</div>
 
+<img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/login.png" width=250 height=500>
+<img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/login_with.png" width=250 height=500>
 
+`First, sign up using Google account.(In the meantime it only let you register using google credentials)`
 
+<br clear="left"/>
 
+<img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/profile_screen.png" width=250 height=500>
+<img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/profile_screen_ads.png" width=250 height=500>
+
+`Click on purchase coins, you will have to watch until the end the video ad to receive the reward which is 1 coin.
+Remember, you will need 3 coins to purchase a lottery ticket.`
+
+<br clear="left"/>
+
+<img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/create_pool_screen.png" width=250 height=500>
+<img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/profile_screen_ticket_purchased.png" width=250 height=500>
+
+`Once you have 3 coins, you can either buy a ticket or create a new pool. remember, the last option creates a pool and also provides you with a ticket.`
+
+<br clear="left"/>
+
+<img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/play_screen.png" width=250 height=500>
+<img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/play_screen_buy_ticket.png" width=250 height=500>
+
+`You can buy tickets as much as you want but it requires always 3 coins. Make sure purchase tickets before the timer countdown is over.`
+
+<br clear="left"/>
+
+<img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/profile_screen_close_time.png" width=250 height=500>
+<img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/profile_screen_claim_prize.png" width=250 height=500>
+
+`Once the timer countdown is over, the app will generate a randowm winning number, to check if your ticket number won, update ticket and you will see the result.
+If you won, click on claim prize button, this will make a request to the server and the "Admin" will send your prize, [This last option is theorically, because it depends 
+of many things, such as number of tickets bought and the CPM (cost per mille) rates for AdMob ads videos, for example lets say CPM is 0.10 € per 1000 views, and the lottery pool sold 10.000 tickets,
+then your prize should be 0.10 * 10.000 = 1.00 €]`
+
+<br clear="left"/>
+
+<img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/play_screen_search_by_id.png" width=250 height=500>
+<img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/play_screen_sharing_link.png" width=250 height=500>
+
+`You can search by pool ID, and also you can share any pool with anyone by clicking on share button [Share symbol], this will generate a deep link, so anyone has the app installed
+can join the lottery.`
+
+<br clear="left"/>
+
+<img align="left" src="https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/res/images/profile_screen_update_and_delete.png" width=250 height=500>
+
+`You can update the ticket data from firebase cloud by clicking on update button, this will retrieve the last current data, also you can delete your ticket in case
+its an old ticket, when you delete a ticket you can't get again`.
+
+<br clear="left"/>
