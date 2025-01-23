@@ -9,6 +9,7 @@
 [![Licence](https://img.shields.io/github/license/exyte/AndroidAnimatedNavigationBar)](https://github.com/exyte/AndroidAnimatedNavigationBar/blob/master/LICENSE)
 [![API](https://img.shields.io/badge/API%20-26%2B-brightgreen)](https://github.com/exyte/AndroidAnimatedNavigationBar)
 [![Maven-Central](https://img.shields.io/maven-central/v/com.exyte/animated-navigation-bar)](https://central.sonatype.com/artifact/com.exyte/animated-navigation-bar/1.0.0/overview)
+![Status: Finished](https://img.shields.io/badge/Status-Finished-brightgreen)
 
 <div>
   <h1>Description</h1>
@@ -124,4 +125,4 @@ its an old ticket, when you delete a ticket you can't get again`.
 `To use the app, you need to create your own firebase project and admob account, you have to follow a few steps:`
 <br/>
 - `Replace google-service.json file with new one, you can do this by following this:` [firebase tutorial](https://firebase.google.com/docs/android/)
-- `Replace Admob app ID` [here](https://example.com) `and ad unit ID ` [here](https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/java/com/example/luckylotto/data/core/admob/Admob.kt)
+- `Replace Admob app ID` [here](https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/AndroidManifest.xml) `and ad unit ID ` [here](https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/java/com/example/luckylotto/data/core/admob/Admob.kt) `Follow this:` [google tutorial](https://support.google.com/admob/answer/9905527?hl=en)
