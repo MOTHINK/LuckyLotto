@@ -14,7 +14,7 @@ import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoa
 class Admob {
 
     private var rewardedInterstitialAd: RewardedInterstitialAd? = null
-    private val rewardedInterstitialAdUnitId = "ca-app-pub-7926597932830881/5357602642"
+    private val rewardedInterstitialAdUnitId = "{#}"
     companion object {
         val instance:Admob by lazy { Admob() }
     }
