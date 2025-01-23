@@ -11,6 +11,20 @@
 [![Maven-Central](https://img.shields.io/maven-central/v/com.exyte/animated-navigation-bar)](https://central.sonatype.com/artifact/com.exyte/animated-navigation-bar/1.0.0/overview)
 ![Status: Finished](https://img.shields.io/badge/Status-Finished-brightgreen)
 
+
+<div>
+  <h1>Index</h1>
+</div>
+
+## Table of Contents
+- [Description](#description)
+- [Features](#features)
+- [Libraries used](#libraries-used)
+- [Third party libraries](#third-party-libraries)
+- [Architecture](#architecture)
+- [Example](#example)
+- [How to use](#how-to-use)
+  
 <div>
   <h1>Description</h1>
 </div>
