@@ -124,4 +124,4 @@ its an old ticket, when you delete a ticket you can't get again`.
 `To use the app, you need to create your own firebase project and admob account, you have to follow a few steps:`
 <br/>
 - `Replace google-service.json file with new one, you can do this by following this:` [firebase tutorial](https://firebase.google.com/docs/android/)
-- `Replace Admob app ID (within manifest file) and ad unit ID (), `
+- `Replace Admob app ID` [here](https://example.com) `and ad unit ID ` [here](https://github.com/MOTHINK/LuckyLotto/blob/main/app/src/main/java/com/example/luckylotto/data/core/admob/Admob.kt)
