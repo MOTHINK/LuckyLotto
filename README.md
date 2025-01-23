@@ -14,10 +14,9 @@
 
 
 <div>
-  <h1>Index</h1>
+  <h1>Content index</h1>
 </div>
 
-## Table of Contents
 - [Description](#description)
 - [Features](#features)
 - [Libraries used](#libraries-used)
