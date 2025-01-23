@@ -28,7 +28,6 @@ import com.exyte.animatednavbar.animation.indendshape.ShapeCornerRadius
 fun NewCustomBottomBar(mainViewModel: MainViewModel, modifier: Modifier) {
     val appMainColor = AppGreen
     val selectedIndex by mainViewModel.navBarIndex.collectAsState()
-    Log.d("checking12345","User is registred")
     AnimatedNavigationBar(
         modifier = modifier.padding(10.dp, 0.dp, 10.dp, 10.dp).fillMaxWidth(),
         selectedIndex = selectedIndex,
