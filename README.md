@@ -10,6 +10,7 @@
 [![API](https://img.shields.io/badge/API%20-26%2B-brightgreen)](https://github.com/exyte/AndroidAnimatedNavigationBar)
 [![Maven-Central](https://img.shields.io/maven-central/v/com.exyte/animated-navigation-bar)](https://central.sonatype.com/artifact/com.exyte/animated-navigation-bar/1.0.0/overview)
 ![Status: Finished](https://img.shields.io/badge/Status-Finished-brightgreen)
+![Updates: Ongoing](https://img.shields.io/badge/Updates-Ongoing-blue)
 
 
 <div>
